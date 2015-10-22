@@ -1,0 +1,12 @@
+#N canvas 633 165 450 300 10;
+#X obj 133 87 netreceive 54321;
+#X obj 140 131 route 0 1 2 3 4 5 6 7;
+#X floatatom 107 200 5 0 0 0 - - -;
+#X floatatom 158 215 5 0 0 0 - - -;
+#X floatatom 212 220 5 0 0 0 - - -;
+#X floatatom 264 221 5 0 0 0 - - -;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 1 1 3 0;
+#X connect 1 2 4 0;
+#X connect 1 3 5 0;
