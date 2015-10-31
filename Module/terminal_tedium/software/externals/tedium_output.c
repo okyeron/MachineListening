@@ -1,6 +1,6 @@
 /***********************************************************************
  * terminal tedium: GPIO
- * out (inlets 2, 3) : GPIO 16, 26 [odroid w = 34, 35]
+ * out (inlets 2, 3) : GPIO 7, 8 [odroid w = 34, 35]
  * ****************************************************************************/
 
 #include "m_pd.h"
@@ -13,8 +13,8 @@
 /* a+, b+ : GPIO16, 26; if using odroid w, change pins to GPIO34 and 35 */
 
 
-const uint8_t CLK1 = 16; // 34
-const uint8_t CLK2 = 26; // 35
+const uint8_t CLK1 = 8; // 34
+const uint8_t CLK2 = 7; // 35
 
 static t_class *tedium_output_class;
 

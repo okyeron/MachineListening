@@ -61,4 +61,12 @@ sudo cp tedium_input.pd_linux ~/pd-externals
 sudo mv tedium_output.pd_linux ~/pd-externals
 
 
- sudo puredata -path ~/pd-externals -noadc -nogui -rt D_outtest.pd
+sudo puredata -path ~/pd-externals -noadc -nogui -rt D_outtest.pd
+sudo pdextended -path ~/pd-externals -nodac -nogui -rt -audiodev 0 B_intest.pd
+
+cat /proc/asound/cards /proc/asound/modules
+
+sudo pdextended -path ~/pd-externals -nogui -rt -audiodev 0 -r 48000 -inchannels 2 -outchannels 2 B_intest.pd
+
+
+sudo shutdown -h now
