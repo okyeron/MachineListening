@@ -40,9 +40,8 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
                          void *userData );
 
 FFT fft;
+SpectralFeatures features;
 float *spectrum;
-float fifo [FRAMES_PER_BUFFER] = { 0 };
-float prevFlux = 0.0;
 
 static int gNumNoInputs = 0;
 /* This routine will be called by the PortAudio engine when audio is needed.
@@ -64,7 +63,7 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
     (void) statusFlags;
     (void) userData;
     const int signalSize = FRAMES_PER_BUFFER;
-    float buf[signalSize];
+    float flux;
     
     if( inputBuffer == NULL )
     {
@@ -77,42 +76,16 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
     }
     else
     {
-
         spectrum = getSpectrum(&fft, in, signalSize);
-
-        //Calculate Spectral Flux
-        float power = 0.0;
-        float flux = 0.0;
-
-        for (int i=0; i<signalSize; i++) {
-            power += pow(spectrum[i] - fifo[i],2);
-        }
         
-        flux = sqrt(power) / (signalSize);
+        //        printf("Output:");
+        //        for(i=0;i<signalSize;i++)
+        //        {
+        //            buf[i] = (spectrum[i])/ (signalSize/2);
+        //            printf("%f",buf[i]);
+        //        }
         
-        // TODO: Low pass filter
-        float thresh = 0.01;
-        int onset = 0;
-        float alpha = 0.1;
-        
-        flux = (1-alpha)*flux + alpha * prevFlux;
-        if(flux > thresh){
-            onset = 1;
-            printf("Flux: %i, %f\n", onset, flux);
-            
-        }
-        prevFlux = flux;
-        
-        //Update fifo
-        memcpy(fifo,spectrum,signalSize*sizeof(float));
-        
-//        printf("Output:");
-//        for(i=0;i<signalSize;i++)
-//        {
-//            buf[i] = (spectrum[i])/ (signalSize/2);
-//            printf("%f",buf[i]);
-//        }
-
+        flux = extractSpectralFeatures(&features, spectrum, signalSize);
         
         for( i=0; i<framesPerBuffer; i++ )
         {
@@ -157,11 +130,12 @@ int main(void)
     outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
     outputParameters.hostApiSpecificStreamInfo = NULL;
     
-    /* Allocated memory for FFT */
-
+    /* Instantiate FFT */
     fft_new(&fft, FRAMES_PER_BUFFER);
     spectrum = malloc(FRAMES_PER_BUFFER * sizeof(double));
     
+    /* Instantiate Spectral Features */
+    spectralFeatures_new(&features, FRAMES_PER_BUFFER);
     
     err = Pa_OpenStream(
                         &stream,

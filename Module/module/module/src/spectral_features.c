@@ -27,30 +27,25 @@ float extractSpectralFeatures(SpectralFeatures *features, float* spectrum, const
     
     flux = sqrt(power) / (signalSize);
     
-    // TODO: Low pass filter
+    // Low pass filter
     float thresh = 0.01;
     int onset = 0;
     float alpha = 0.1;
-    
     flux = (1-alpha)*flux + alpha * features->prevFlux;
+    
+    /* Print if greater than threshold */
     if(flux > thresh){
         onset = 1;
         printf("Flux: %i, %f\n", onset, flux);
         
     }
+    
+    /* Save previous Spectral Flux */
     features->prevFlux = flux;
     
-    //Update fifo
-//    memcpy(features->fifo,spectrum,signalSize*sizeof(float));
-    features->fifo = spectrum;
-    
-    //        printf("Output:");
-    //        for(i=0;i<signalSize;i++)
-    //        {
-    //            buf[i] = (spectrum[i])/ (signalSize/2);
-    //            printf("%f",buf[i]);
-    //        }
-    
+    /* Update fifo */
+    memcpy(features->fifo,spectrum,signalSize*sizeof(float));
+
     return flux;
 
 }
