@@ -12,6 +12,7 @@
 		A442F6B61BF56AB300F523E1 /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = A442F6B21BF56AB300F523E1 /* kiss_fftr.c */; settings = {ASSET_TAGS = (); }; };
 		A46D76D81BEC6BA300856676 /* libportaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A46D76D41BEC6BA300856676 /* libportaudio.a */; settings = {ASSET_TAGS = (); }; };
 		A46D76DA1BEC6CA200856676 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A46D76D91BEC6CA200856676 /* main.c */; settings = {ASSET_TAGS = (); }; };
+		A4FFB99A1BF6C002008B7AF1 /* spectral_features.c in Sources */ = {isa = PBXBuildFile; fileRef = A4FFB9981BF6C002008B7AF1 /* spectral_features.c */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,6 +41,8 @@
 		A46D76D51BEC6BA300856676 /* pa_linux_alsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_linux_alsa.h; sourceTree = "<group>"; };
 		A46D76D61BEC6BA300856676 /* portaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = portaudio.h; sourceTree = "<group>"; };
 		A46D76D91BEC6CA200856676 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		A4FFB9981BF6C002008B7AF1 /* spectral_features.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spectral_features.c; sourceTree = "<group>"; };
+		A4FFB9991BF6C002008B7AF1 /* spectral_features.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spectral_features.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +101,8 @@
 				A46D76D91BEC6CA200856676 /* main.c */,
 				A442F6AA1BF5690D00F523E1 /* fft.c */,
 				A442F6AB1BF5690D00F523E1 /* fft.h */,
+				A4FFB9981BF6C002008B7AF1 /* spectral_features.c */,
+				A4FFB9991BF6C002008B7AF1 /* spectral_features.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -178,6 +183,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A442F6AC1BF5690D00F523E1 /* fft.c in Sources */,
+				A4FFB99A1BF6C002008B7AF1 /* spectral_features.c in Sources */,
 				A46D76DA1BEC6CA200856676 /* main.c in Sources */,
 				A442F6B51BF56AB300F523E1 /* kiss_fft.c in Sources */,
 				A442F6B61BF56AB300F523E1 /* kiss_fftr.c in Sources */,

@@ -8,11 +8,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 #include <string.h>
 #include "portaudio.h"
-#include "kiss_fft.h"
-#include "kiss_fftr.h"
+#include "fft.h"
+#include "spectral_features.h"
+
 
 
 #import <CoreAudio/CoreAudio.h>
@@ -39,7 +39,9 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
                          PaStreamCallbackFlags statusFlags,
                          void *userData );
 
-kiss_fft_cpx fifo [FRAMES_PER_BUFFER] = { 0 };
+FFT fft;
+float *spectrum;
+float fifo [FRAMES_PER_BUFFER] = { 0 };
 float prevFlux = 0.0;
 
 static int gNumNoInputs = 0;
@@ -62,9 +64,7 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
     (void) statusFlags;
     (void) userData;
     const int signalSize = FRAMES_PER_BUFFER;
-    const int binSize = signalSize/2 +1;
-    float buf[binSize];
-    const int inverse = 1;
+    float buf[signalSize];
     
     if( inputBuffer == NULL )
     {
@@ -77,29 +77,21 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
     }
     else
     {
-        
-        //Allocate kiss_fft params
-        kiss_fft_cpx out_cpx[binSize],fft_out[binSize], *cpx_buf;
-    
-        kiss_fftr_cfg fft = kiss_fftr_alloc(binSize*2 ,0 ,0,0);
-        kiss_fftr_cfg ifft = kiss_fftr_alloc(binSize*2,inverse,0,0);
-        
-        cpx_buf = (kiss_fft_cpx*) in;
-        kiss_fftr(fft,(kiss_fft_scalar*)cpx_buf, out_cpx);
-        kiss_fftri(ifft,out_cpx,(kiss_fft_scalar*)out );
-        
+
+        spectrum = getSpectrum(&fft, in, signalSize);
+
         //Calculate Spectral Flux
         float power = 0.0;
         float flux = 0.0;
 
-        for (int i=0; i<binSize; i++) {
-            power += pow(fft_out[i].r - fifo[i].r,2);
+        for (int i=0; i<signalSize; i++) {
+            power += pow(spectrum[i] - fifo[i],2);
         }
         
-        flux = sqrt(power) / (binSize/2);
+        flux = sqrt(power) / (signalSize);
         
         // TODO: Low pass filter
-        float thresh = 0.005;
+        float thresh = 0.01;
         int onset = 0;
         float alpha = 0.1;
         
@@ -108,21 +100,19 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
             onset = 1;
             printf("Flux: %i, %f\n", onset, flux);
             
-//            printf("Output:");
-//            for(i=0;i<binSize;i++)
-//            {
-//                buf[i] = (fft_out[i].r)/ (binSize/2);
-//                printf("%f",buf[i]);
-//            }
         }
         prevFlux = flux;
         
         //Update fifo
-        memcpy(fifo,fft_out,binSize);
+        memcpy(fifo,spectrum,signalSize*sizeof(float));
         
-        kiss_fft_cleanup();
-        free(fft);
-        free(ifft);
+//        printf("Output:");
+//        for(i=0;i<signalSize;i++)
+//        {
+//            buf[i] = (spectrum[i])/ (signalSize/2);
+//            printf("%f",buf[i]);
+//        }
+
         
         for( i=0; i<framesPerBuffer; i++ )
         {
@@ -166,6 +156,12 @@ int main(void)
     outputParameters.sampleFormat = PA_SAMPLE_TYPE;
     outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
     outputParameters.hostApiSpecificStreamInfo = NULL;
+    
+    /* Allocated memory for FFT */
+
+    fft_new(&fft, FRAMES_PER_BUFFER);
+    spectrum = malloc(FRAMES_PER_BUFFER * sizeof(double));
+    
     
     err = Pa_OpenStream(
                         &stream,
