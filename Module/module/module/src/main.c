@@ -64,6 +64,7 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
     (void) userData;
     const int signalSize = FRAMES_PER_BUFFER;
     float flux;
+    float centroid;
     
     if( inputBuffer == NULL )
     {
@@ -85,7 +86,9 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
         //            printf("%f",buf[i]);
         //        }
         
-        flux = extractSpectralFeatures(&features, spectrum, signalSize);
+        extractSpectralFeatures(&features, spectrum, signalSize);
+        flux = getSpectralFlux(&features);
+        centroid = getSpectralCentroid(&features);
         
         for( i=0; i<framesPerBuffer; i++ )
         {
