@@ -31,13 +31,6 @@
 
 
 typedef float SAMPLE;
-
-static int onsetCallback( const void *inputBuffer, void *outputBuffer,
-                         unsigned long framesPerBuffer,
-                         const PaStreamCallbackTimeInfo* timeInfo,
-                         PaStreamCallbackFlags statusFlags,
-                         void *userData );
-
 FFT *fft;
 SpectralFeatures *features;
 float *spectrum;
@@ -74,9 +67,9 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     }
     else
     {
-        spectrum = fft->getSpectrum(in, signalSize);
+        spectrum = fft->getSpectrum(in);
         
-        features->extractFeatures(spectrum, signalSize);
+        features->extractFeatures(spectrum);
         flux = features->getSpectralFlux();
         centroid = features->getSpectralCentroid();
         
@@ -86,7 +79,6 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             *out++ = 0; //*in++;     /* right - clean */
         }
     }
-    
     return paContinue;
 }
 
@@ -126,11 +118,9 @@ int main(void)
     /* Instantiate FFT */
     fft = new FFT(FRAMES_PER_BUFFER);
     spectrum = (float*) malloc(FRAMES_PER_BUFFER*sizeof(float));
-//  spectrum = (float*) malloc(FRAMES_PER_BUFFER * sizeof(double));
     
     /* Instantiate Spectral Features */
-    features = new SpectralFeatures(FRAMES_PER_BUFFER);
-
+    features = new SpectralFeatures(FRAMES_PER_BUFFER, SAMPLE_RATE);
     
     err = Pa_OpenStream(
                         &stream,

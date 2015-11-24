@@ -20,6 +20,7 @@
 class SpectralFeatures {
 public:
     int signalSize;
+    int sampleRate;
     float *fifo;
     float flux;
     float prevFlux;
@@ -30,8 +31,8 @@ public:
     float rms;
     
     /* Public methods */
-    SpectralFeatures (int signalSize);
-    void extractFeatures(float* spectrum, const int signalSize);
+    SpectralFeatures (int numSamples, int fs);
+    void extractFeatures(float* spectrum);
     float max_abs_array(float a[], float num_elements);
     
     /* Public methods to get features */
@@ -43,6 +44,9 @@ public:
     float getRMS();
     
 protected:
+    void calculateSpectralFlux(float power);
+    void calculateSpectralCentroid(float* spectrum, float spectrum_sum);
+
     float* initArray(float* array, int signalSize){
         for (int i=0; i<signalSize; i++)
         {
@@ -53,11 +57,14 @@ protected:
     }
     
     void setFifo(float* array, int signalSize){
-        for (int i=0; i<signalSize; i++)
-        {
-            fifo[i] = array[i];
+        if(array[0] == INFINITY){
+            fifo = initArray(fifo, signalSize);
+        } else {
+            for (int i=0; i<signalSize; i++)
+            {
+                fifo[i] = array[i];
+            }
         }
     }
-    
 };
 

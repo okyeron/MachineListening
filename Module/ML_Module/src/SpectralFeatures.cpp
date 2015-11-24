@@ -8,30 +8,57 @@
 
 #include "SpectralFeatures.hpp"
 
-SpectralFeatures::SpectralFeatures (int blockSize) {
-    signalSize = blockSize;
+SpectralFeatures::SpectralFeatures (int numSamples, int fs) {
+    signalSize = numSamples;
+    sampleRate = fs;
     prevFlux = 0.0;
     fifo = (float*) malloc(signalSize*sizeof(float));
     fifo = initArray(fifo, signalSize);
 }
 
-
-void SpectralFeatures::extractFeatures(float* spectrum, const int signalSize)
+/*  Method to extract spectral features.
+    Input arguments are the magnitude spectrum and block size */
+void SpectralFeatures::extractFeatures(float* spectrum)
 {
-    
     float power = 0.0;
     float spectrum_sq[signalSize];
     float spectrum_sum = 0.0;
     float spectrum_abs_sum = 0.0;
     
     for (int i=0; i<signalSize; i++) {
+        // Calculate the difference between the current block and the previous block's spectrum
         float diff = spectrum[i] - fifo[i];
+        
+        //Calculate the square
         power += diff * diff;
+        
+        //Sum of the magnitude spectrum
         spectrum_sum += spectrum[i];
         spectrum_abs_sum += fabsf(spectrum[i]);
-        spectrum_sq[i] = pow(spectrum[i],2);
+        spectrum_sq[i] = spectrum[i] * spectrum[i];
     }
     
+    /* Update fifo */
+    setFifo(spectrum,signalSize);
+    
+    /* Calculate Spectral Flux */
+    calculateSpectralFlux(power);
+    
+    // Silent frames
+    centroid = 0.0;
+    crest = 0.0;
+    
+    if (spectrum_sum > 0.001){
+        //Calculate Spectral Crest
+        crest = max_abs_array(spectrum, signalSize) / spectrum_abs_sum;
+        
+        //Calculate Spectral Centroid
+        calculateSpectralCentroid(spectrum, spectrum_sum);
+    }
+}
+
+void SpectralFeatures::calculateSpectralFlux(float power)
+{
     //Calculate Spectral Flux
     flux = sqrt(power) / (signalSize);
     
@@ -41,26 +68,21 @@ void SpectralFeatures::extractFeatures(float* spectrum, const int signalSize)
     
     /* Save previous Spectral Flux */
     prevFlux = flux;
-    
-    /* Update fifo */
-    setFifo(spectrum,signalSize);
-    
-    //Calculate Spectral Centroid and Crest
-    // Silent frames
-    if (spectrum_sum < 0.0001){
-        centroid = 0.0;
-        crest = 0.0;
+}
+
+void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum_sum)
+{
+    centroid = 0.0;
+    for (int i=0; i<signalSize; i++) {
+        centroid += i*spectrum[i];
     }
-    else
-    {
-        crest = max_abs_array(spectrum, signalSize) / spectrum_abs_sum;
-        
-        for (int i=0; i<signalSize; i++) {
-            centroid += i*spectrum[i];
-        }
-        // TODO: This needs to be mapped to frequency and 1v / octave
-        centroid = centroid / spectrum_sum;
-    }
+    centroid = centroid / spectrum_sum;
+    
+    // Convert centroid from bin index to frequency
+    centroid = centroid / signalSize * sampleRate / 2;
+    
+    // TODO: This needs to be mapped to frequency and 1v / octave
+    
 }
 
 float SpectralFeatures::max_abs_array(float a[], float num_elements)
@@ -102,6 +124,7 @@ float SpectralFeatures::getSpectralRolloff(){
 }
 
 float SpectralFeatures::getSpectralCentroid(){
+//    printf("Centroid: %f, \n", centroid);
     return centroid;
     
 }

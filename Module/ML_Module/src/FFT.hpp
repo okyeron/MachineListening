@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <iostream>     // std::cout
+#include <cmath>        // std::abs
 #include "kiss_fft.h"
 #include "kiss_fftr.h"
 #endif /* fft_hpp */
@@ -19,8 +21,11 @@ typedef float SAMPLE;
 
 class FFT {
     public:
-    FFT(int signalSize);
-    float* getSpectrum (const SAMPLE* in, const int signalSize);
+    
+    int signalSize;
+    
+    FFT(int numSamples);
+    float* getSpectrum (const SAMPLE* in);
     
     kiss_fftr_cfg f_fft;
     
@@ -28,6 +33,6 @@ class FFT {
     kiss_fft_cpx* cx_in;
     kiss_fft_cpx* cx_out;
     
-    float *real_out;
+    float *mag_out;
     float *window;
 };
