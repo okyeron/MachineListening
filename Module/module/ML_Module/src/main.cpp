@@ -6,14 +6,13 @@
 //  Copyright © 2015 Christopher Latina. All rights reserved.
 //
 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "portaudio.h"
-#include "fft.h"
-#include "spectral_features.h"
-
-
+#include "fft.hpp"
+#include "SpectralFeatures.hpp"
 
 #import <CoreAudio/CoreAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
@@ -39,8 +38,8 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
                          PaStreamCallbackFlags statusFlags,
                          void *userData );
 
-FFT fft;
-SpectralFeatures features;
+FFT *fft;
+SpectralFeatures *features;
 float *spectrum;
 
 static int gNumNoInputs = 0;
@@ -48,7 +47,7 @@ static int gNumNoInputs = 0;
  ** It may be called at interrupt level on some machines so don't do anything
  ** that could mess up the system like calling malloc() or free().
  */
-static int onsetCallback( const void *inputBuffer, void *outputBuffer,
+static int audioCallback( const void *inputBuffer, void *outputBuffer,
                          unsigned long framesPerBuffer,
                          const PaStreamCallbackTimeInfo* timeInfo,
                          PaStreamCallbackFlags statusFlags,
@@ -75,11 +74,11 @@ static int onsetCallback( const void *inputBuffer, void *outputBuffer,
     }
     else
     {
-        spectrum = getSpectrum(&fft, in, signalSize);
+        spectrum = fft->getSpectrum(in, signalSize);
         
-        extractSpectralFeatures(&features, spectrum, signalSize);
-        flux = getSpectralFlux(&features);
-        centroid = getSpectralCentroid(&features);
+        features->extractFeatures(spectrum, signalSize);
+        flux = features->getSpectralFlux();
+        centroid = features->getSpectralCentroid();
         
         for( i=0; i<framesPerBuffer; i++ )
         {
@@ -125,11 +124,13 @@ int main(void)
     outputParameters.hostApiSpecificStreamInfo = NULL;
     
     /* Instantiate FFT */
-    fft_new(&fft, FRAMES_PER_BUFFER);
-    spectrum = malloc(FRAMES_PER_BUFFER * sizeof(double));
+    fft = new FFT(FRAMES_PER_BUFFER);
+    spectrum = (float*) malloc(FRAMES_PER_BUFFER*sizeof(float));
+//  spectrum = (float*) malloc(FRAMES_PER_BUFFER * sizeof(double));
     
     /* Instantiate Spectral Features */
-    spectralFeatures_new(&features, FRAMES_PER_BUFFER);
+    features = new SpectralFeatures(FRAMES_PER_BUFFER);
+
     
     err = Pa_OpenStream(
                         &stream,
@@ -138,7 +139,7 @@ int main(void)
                         SAMPLE_RATE,
                         FRAMES_PER_BUFFER,
                         0, /* paClipOff, */  /* we won't output out of range samples so don't bother clipping them */
-                        onsetCallback,
+                        audioCallback,
                         NULL );
     if( err != paNoError ) goto error;
     

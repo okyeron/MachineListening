@@ -40,7 +40,10 @@ void extractSpectralFeatures(SpectralFeatures *features, float* spectrum, const 
     /* Save previous Spectral Flux */
     features->prevFlux = features->flux;
     
-    //Calculate Spectral Flux
+    /* Update fifo */
+    memcpy(features->fifo,spectrum,signalSize*sizeof(float));
+    
+    //Calculate Spectral Centroid and Crest
     // Silent frames
     if (spectrum_sum > 0.001){
         features->centroid = 0.0;
@@ -56,9 +59,6 @@ void extractSpectralFeatures(SpectralFeatures *features, float* spectrum, const 
         // TODO: This needs to be mapped to frequency and 1v / octave
         features->centroid = features->centroid / spectrum_sum;
     }
-    
-    /* Update fifo */
-    memcpy(features->fifo,spectrum,signalSize*sizeof(float));
 }
 
 float max_abs_array(float a[], float num_elements)
@@ -75,12 +75,12 @@ float max_abs_array(float a[], float num_elements)
 }
 
 float getSpectralFlux(SpectralFeatures *features){
-    float thresh = 0.01;
+    float thresh = 0.04;
     int onset = 0;
     /* Print if greater than threshold */
     if(features->flux > thresh){
         onset = 1;
-        printf("Flux: %i, %f\n", onset, features->flux);
+        printf("Onset: %i, Flux: %f\n", onset, features->flux);
     }
     
     return features->flux;

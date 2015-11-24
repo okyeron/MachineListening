@@ -12,11 +12,31 @@
 		A442F6B61BF56AB300F523E1 /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = A442F6B21BF56AB300F523E1 /* kiss_fftr.c */; settings = {ASSET_TAGS = (); }; };
 		A46D76D81BEC6BA300856676 /* libportaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A46D76D41BEC6BA300856676 /* libportaudio.a */; settings = {ASSET_TAGS = (); }; };
 		A46D76DA1BEC6CA200856676 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A46D76D91BEC6CA200856676 /* main.c */; settings = {ASSET_TAGS = (); }; };
+		A4B94CEB1C04F5CB00B49869 /* FFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CDF1C04F5CB00B49869 /* FFT.cpp */; settings = {ASSET_TAGS = (); }; };
+		A4B94CEF1C04F5CB00B49869 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CE71C04F5CB00B49869 /* main.cpp */; settings = {ASSET_TAGS = (); }; };
+		A4B94CF01C04F5CB00B49869 /* SpectralFeatures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CE91C04F5CB00B49869 /* SpectralFeatures.cpp */; settings = {ASSET_TAGS = (); }; };
+		A4B94CF21C04F74300B49869 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B94CF11C04F74300B49869 /* CoreServices.framework */; };
+		A4B94CF41C04F74A00B49869 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B94CF31C04F74A00B49869 /* CoreFoundation.framework */; };
+		A4B94CF61C04F74F00B49869 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B94CF51C04F74F00B49869 /* AudioUnit.framework */; };
+		A4B94CF81C04F75400B49869 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B94CF71C04F75400B49869 /* AudioToolbox.framework */; };
+		A4B94CFA1C04F75A00B49869 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B94CF91C04F75A00B49869 /* CoreAudio.framework */; };
+		A4B94D071C04F88600B49869 /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CFE1C04F88600B49869 /* kiss_fft.c */; settings = {ASSET_TAGS = (); }; };
+		A4B94D081C04F88600B49869 /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = A4B94D001C04F88600B49869 /* kiss_fftr.c */; settings = {ASSET_TAGS = (); }; };
+		A4B94D091C04F88600B49869 /* libportaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B94D041C04F88600B49869 /* libportaudio.a */; settings = {ASSET_TAGS = (); }; };
 		A4FFB99A1BF6C002008B7AF1 /* spectral_features.c in Sources */ = {isa = PBXBuildFile; fileRef = A4FFB9981BF6C002008B7AF1 /* spectral_features.c */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		A46D76901BEC54EB00856676 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		A4B9443F1C04E08000B49869 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -41,6 +61,26 @@
 		A46D76D51BEC6BA300856676 /* pa_linux_alsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_linux_alsa.h; sourceTree = "<group>"; };
 		A46D76D61BEC6BA300856676 /* portaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = portaudio.h; sourceTree = "<group>"; };
 		A46D76D91BEC6CA200856676 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		A4B944411C04E08000B49869 /* ML_Module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ML_Module; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4B94CDF1C04F5CB00B49869 /* FFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT.cpp; sourceTree = "<group>"; };
+		A4B94CE01C04F5CB00B49869 /* FFT.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FFT.hpp; sourceTree = "<group>"; };
+		A4B94CE71C04F5CB00B49869 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		A4B94CE91C04F5CB00B49869 /* SpectralFeatures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpectralFeatures.cpp; sourceTree = "<group>"; };
+		A4B94CEA1C04F5CB00B49869 /* SpectralFeatures.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SpectralFeatures.hpp; sourceTree = "<group>"; };
+		A4B94CF11C04F74300B49869 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		A4B94CF31C04F74A00B49869 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		A4B94CF51C04F74F00B49869 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		A4B94CF71C04F75400B49869 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		A4B94CF91C04F75A00B49869 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		A4B94CFD1C04F88600B49869 /* _kiss_fft_guts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _kiss_fft_guts.h; sourceTree = "<group>"; };
+		A4B94CFE1C04F88600B49869 /* kiss_fft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kiss_fft.c; sourceTree = "<group>"; };
+		A4B94CFF1C04F88600B49869 /* kiss_fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kiss_fft.h; sourceTree = "<group>"; };
+		A4B94D001C04F88600B49869 /* kiss_fftr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kiss_fftr.c; sourceTree = "<group>"; };
+		A4B94D011C04F88600B49869 /* kiss_fftr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kiss_fftr.h; sourceTree = "<group>"; };
+		A4B94D021C04F88600B49869 /* kissfft.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = kissfft.hh; sourceTree = "<group>"; };
+		A4B94D041C04F88600B49869 /* libportaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libportaudio.a; sourceTree = "<group>"; };
+		A4B94D051C04F88600B49869 /* pa_linux_alsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_linux_alsa.h; sourceTree = "<group>"; };
+		A4B94D061C04F88600B49869 /* portaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = portaudio.h; sourceTree = "<group>"; };
 		A4FFB9981BF6C002008B7AF1 /* spectral_features.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spectral_features.c; sourceTree = "<group>"; };
 		A4FFB9991BF6C002008B7AF1 /* spectral_features.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spectral_features.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,6 +91,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				A46D76D81BEC6BA300856676 /* libportaudio.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4B9443E1C04E08000B49869 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4B94CFA1C04F75A00B49869 /* CoreAudio.framework in Frameworks */,
+				A4B94CF81C04F75400B49869 /* AudioToolbox.framework in Frameworks */,
+				A4B94CF61C04F74F00B49869 /* AudioUnit.framework in Frameworks */,
+				A4B94D091C04F88600B49869 /* libportaudio.a in Frameworks */,
+				A4B94CF41C04F74A00B49869 /* CoreFoundation.framework in Frameworks */,
+				A4B94CF21C04F74300B49869 /* CoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,7 +126,13 @@
 		A46D76891BEC54EB00856676 = {
 			isa = PBXGroup;
 			children = (
+				A4B94CF91C04F75A00B49869 /* CoreAudio.framework */,
+				A4B94CF71C04F75400B49869 /* AudioToolbox.framework */,
+				A4B94CF51C04F74F00B49869 /* AudioUnit.framework */,
+				A4B94CF31C04F74A00B49869 /* CoreFoundation.framework */,
+				A4B94CF11C04F74300B49869 /* CoreServices.framework */,
 				A46D76941BEC54EB00856676 /* module */,
+				A4B944421C04E08000B49869 /* ML_Module */,
 				A46D76931BEC54EB00856676 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -82,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				A46D76921BEC54EB00856676 /* module */,
+				A4B944411C04E08000B49869 /* ML_Module */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,6 +186,59 @@
 			path = portaudio;
 			sourceTree = "<group>";
 		};
+		A4B944421C04E08000B49869 /* ML_Module */ = {
+			isa = PBXGroup;
+			children = (
+				A4B94CFB1C04F88600B49869 /* include */,
+				A4B94CD31C04EAD100B49869 /* src */,
+			);
+			path = ML_Module;
+			sourceTree = "<group>";
+		};
+		A4B94CD31C04EAD100B49869 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A4B94CDF1C04F5CB00B49869 /* FFT.cpp */,
+				A4B94CE01C04F5CB00B49869 /* FFT.hpp */,
+				A4B94CE71C04F5CB00B49869 /* main.cpp */,
+				A4B94CE91C04F5CB00B49869 /* SpectralFeatures.cpp */,
+				A4B94CEA1C04F5CB00B49869 /* SpectralFeatures.hpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		A4B94CFB1C04F88600B49869 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				A4B94CFC1C04F88600B49869 /* kissfft */,
+				A4B94D031C04F88600B49869 /* portaudio */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		A4B94CFC1C04F88600B49869 /* kissfft */ = {
+			isa = PBXGroup;
+			children = (
+				A4B94CFD1C04F88600B49869 /* _kiss_fft_guts.h */,
+				A4B94CFE1C04F88600B49869 /* kiss_fft.c */,
+				A4B94CFF1C04F88600B49869 /* kiss_fft.h */,
+				A4B94D001C04F88600B49869 /* kiss_fftr.c */,
+				A4B94D011C04F88600B49869 /* kiss_fftr.h */,
+				A4B94D021C04F88600B49869 /* kissfft.hh */,
+			);
+			path = kissfft;
+			sourceTree = "<group>";
+		};
+		A4B94D031C04F88600B49869 /* portaudio */ = {
+			isa = PBXGroup;
+			children = (
+				A4B94D041C04F88600B49869 /* libportaudio.a */,
+				A4B94D051C04F88600B49869 /* pa_linux_alsa.h */,
+				A4B94D061C04F88600B49869 /* portaudio.h */,
+			);
+			path = portaudio;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -146,6 +259,23 @@
 			productReference = A46D76921BEC54EB00856676 /* module */;
 			productType = "com.apple.product-type.tool";
 		};
+		A4B944401C04E08000B49869 /* ML_Module */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A4B944451C04E08000B49869 /* Build configuration list for PBXNativeTarget "ML_Module" */;
+			buildPhases = (
+				A4B9443D1C04E08000B49869 /* Sources */,
+				A4B9443E1C04E08000B49869 /* Frameworks */,
+				A4B9443F1C04E08000B49869 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ML_Module;
+			productName = ML_Module;
+			productReference = A4B944411C04E08000B49869 /* ML_Module */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -156,6 +286,9 @@
 				ORGANIZATIONNAME = "Christopher Latina";
 				TargetAttributes = {
 					A46D76911BEC54EB00856676 = {
+						CreatedOnToolsVersion = 7.0.1;
+					};
+					A4B944401C04E08000B49869 = {
 						CreatedOnToolsVersion = 7.0.1;
 					};
 				};
@@ -173,6 +306,7 @@
 			projectRoot = "";
 			targets = (
 				A46D76911BEC54EB00856676 /* module */,
+				A4B944401C04E08000B49869 /* ML_Module */,
 			);
 		};
 /* End PBXProject section */
@@ -187,6 +321,18 @@
 				A46D76DA1BEC6CA200856676 /* main.c in Sources */,
 				A442F6B51BF56AB300F523E1 /* kiss_fft.c in Sources */,
 				A442F6B61BF56AB300F523E1 /* kiss_fftr.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4B9443D1C04E08000B49869 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A4B94D071C04F88600B49869 /* kiss_fft.c in Sources */,
+				A4B94CEF1C04F5CB00B49869 /* main.cpp in Sources */,
+				A4B94CEB1C04F5CB00B49869 /* FFT.cpp in Sources */,
+				A4B94CF01C04F5CB00B49869 /* SpectralFeatures.cpp in Sources */,
+				A4B94D081C04F88600B49869 /* kiss_fftr.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +442,42 @@
 			};
 			name = Release;
 		};
+		A4B944461C04E08000B49869 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ML_Module/include/portaudio",
+					"$(PROJECT_DIR)/ML_Module/src",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Debug;
+		};
+		A4B944471C04E08000B49869 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ML_Module/include/portaudio",
+					"$(PROJECT_DIR)/ML_Module/src",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -316,6 +498,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		A4B944451C04E08000B49869 /* Build configuration list for PBXNativeTarget "ML_Module" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4B944461C04E08000B49869 /* Debug */,
+				A4B944471C04E08000B49869 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
