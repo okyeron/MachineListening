@@ -102,7 +102,6 @@ float SpectralFeatures::getSpectralRolloff(){
 }
 
 float SpectralFeatures::getSpectralCentroid(){
-//    printf("Centroid: %f\n", centroid);
     return centroid;
     
 }

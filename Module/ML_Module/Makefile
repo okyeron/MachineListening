@@ -26,11 +26,7 @@ default: mlm
 mlm:  main.o
 	$(CC) $(CFLAGS) -o mlm main.o 
 
-# To create the object file mlm.o, we need the source
-# files main.cpp, FFT.cpp, FFT.hpp, SpectralFeatures.cpp, and SpectralFeatures.hpp:
-# also includes
-#
-
+# To create the object file mlm.o, we need the sources
 LIBS = -lpthread -ldl
 LDFLAGS= -Linclude/portaudio -llibportaudio
 
