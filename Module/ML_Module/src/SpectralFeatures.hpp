@@ -57,13 +57,9 @@ protected:
     }
     
     void setFifo(float* array, int signalSize){
-        if(array[0] == INFINITY){
-            fifo = initArray(fifo, signalSize);
-        } else {
-            for (int i=0; i<signalSize; i++)
-            {
-                fifo[i] = array[i];
-            }
+        for (int i=0; i<signalSize; i++)
+        {
+            fifo[i] = array[i];
         }
     }
 };
