@@ -8,12 +8,12 @@
 
 #include "SpectralFeatures.hpp"
 
-SpectralFeatures::SpectralFeatures (int numSamples, int fs) {
-    signalSize = numSamples;
+SpectralFeatures::SpectralFeatures (int numBins, int fs) {
+    binSize = numBins;
     sampleRate = fs;
     prevFlux = 0.0;
-    fifo = (float*) malloc(signalSize*sizeof(float));
-    fifo = initArray(fifo, signalSize);
+    fifo = new float[binSize];
+    fifo = initArray(fifo, binSize);
 }
 
 /*  Method to extract spectral features.
@@ -21,11 +21,11 @@ SpectralFeatures::SpectralFeatures (int numSamples, int fs) {
 void SpectralFeatures::extractFeatures(float* spectrum)
 {
     float power = 0.0;
-    float spectrum_sq[signalSize];
+    float spectrum_sq[binSize];
     float spectrum_sum = 0.0;
     float spectrum_abs_sum = 0.0;
     
-    for (int i=0; i<signalSize; i++) {
+    for (int i=0; i<binSize; i++) {
         // Calculate the difference between the current block and the previous block's spectrum
         float diff = spectrum[i] - fifo[i];
         
@@ -39,7 +39,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     }
     
     /* Update fifo */
-    setFifo(spectrum,signalSize);
+    setFifo(spectrum,binSize);
     
     /* Calculate Spectral Flux */
     calculateSpectralFlux(power);
@@ -50,7 +50,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     
     if (spectrum_sum > 0.001){
         //Calculate Spectral Crest
-        crest = max_abs_array(spectrum, signalSize) / spectrum_abs_sum;
+        crest = max_abs_array(spectrum, binSize) / spectrum_abs_sum;
         
         //Calculate Spectral Centroid
         calculateSpectralCentroid(spectrum, spectrum_sum);
@@ -60,7 +60,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
 void SpectralFeatures::calculateSpectralFlux(float power)
 {
     //Calculate Spectral Flux
-    flux = sqrt(power) / (signalSize);
+    flux = sqrt(power) / (binSize);
     
     // Low pass filter
     float alpha = 0.01;
@@ -73,16 +73,15 @@ void SpectralFeatures::calculateSpectralFlux(float power)
 void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum_sum)
 {
     centroid = 0.0;
-    for (int i=0; i<signalSize; i++) {
+    for (int i=0; i<binSize; i++) {
         centroid += i*spectrum[i];
     }
     centroid = centroid / spectrum_sum;
     
     // Convert centroid from bin index to frequency
-    centroid = centroid / signalSize * sampleRate / 2;
+    centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
     // TODO: This needs to be mapped to frequency and 1v / octave
-    
 }
 
 float SpectralFeatures::max_abs_array(float a[], float num_elements)

@@ -19,7 +19,7 @@
 
 class SpectralFeatures {
 public:
-    int signalSize;
+    int binSize;
     int sampleRate;
     float *fifo;
     float flux;

@@ -29,7 +29,6 @@
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   (512)
 
-
 typedef float SAMPLE;
 FFT *fft;
 SpectralFeatures *features;
@@ -52,11 +51,10 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     (void) timeInfo; /* Prevent unused variable warnings. */
     (void) statusFlags;
     (void) userData;
-    const int signalSize = FRAMES_PER_BUFFER;
     float flux;
     float centroid;
     
-    if( inputBuffer == NULL )
+    if( inputBuffer == NULL)
     {
         for( i=0; i<framesPerBuffer; i++ )
         {
@@ -65,13 +63,18 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         }
         gNumNoInputs += 1;
     }
-    else
+    else if(in != NULL)
     {
         spectrum = fft->getSpectrum(in);
-        
-        features->extractFeatures(spectrum);
-        flux = features->getSpectralFlux();
-        centroid = features->getSpectralCentroid();
+        if(!isnan(*spectrum) && *spectrum != INFINITY)
+        {
+            features->extractFeatures(spectrum);
+            flux = features->getSpectralFlux();
+            centroid = features->getSpectralCentroid();
+        }
+        else{
+            gNumNoInputs += 1;
+        }
         
         for( i=0; i<framesPerBuffer; i++ )
         {
@@ -81,8 +84,6 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     }
     return paContinue;
 }
-
-
 
 /*******************************************************************/
 int main(void);
@@ -100,7 +101,7 @@ int main(void)
         fprintf(stderr,"Error: No default input device.\n");
         goto error;
     }
-    inputParameters.channelCount = 2;       /* stereo input */
+    inputParameters.channelCount = 1;       /* mono input */
     inputParameters.sampleFormat = PA_SAMPLE_TYPE;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
@@ -117,10 +118,10 @@ int main(void)
     
     /* Instantiate FFT */
     fft = new FFT(FRAMES_PER_BUFFER);
-    spectrum = (float*) malloc(FRAMES_PER_BUFFER*sizeof(float));
+    spectrum = new float[FRAMES_PER_BUFFER/2];
     
     /* Instantiate Spectral Features */
-    features = new SpectralFeatures(FRAMES_PER_BUFFER, SAMPLE_RATE);
+    features = new SpectralFeatures(FRAMES_PER_BUFFER/2, SAMPLE_RATE);
     
     err = Pa_OpenStream(
                         &stream,

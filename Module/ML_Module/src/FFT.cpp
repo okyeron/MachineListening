@@ -13,14 +13,14 @@ FFT::FFT(int numSamples)
     signalSize = numSamples;
     
     //Allocate kiss_fft params
-    f_fft = kiss_fftr_alloc(2*signalSize,0,0,0);
+    f_fft = kiss_fftr_alloc(signalSize,0,0,0);
     
-    tx_in = (float*) malloc(signalSize*sizeof(float));
-    cx_in = (kiss_fft_cpx*) malloc(signalSize*sizeof(kiss_fft_cpx));
-    cx_out= (kiss_fft_cpx*) malloc(signalSize*sizeof(kiss_fft_cpx));
+    tx_in = new float[signalSize];
+    cx_in = new kiss_fft_cpx[signalSize];
+    cx_out= new kiss_fft_cpx[signalSize];
     
-    mag_out = (float*) malloc(signalSize*sizeof(float));
-    window = (float*) malloc(signalSize*sizeof(float));
+    mag_out = new float[signalSize/2];
+    window = new float[signalSize];
     
     // Create the Hann Window
     for (int i = 0; i < signalSize; i++) {
@@ -37,20 +37,30 @@ float* FFT::getSpectrum (const SAMPLE* in)
         tx_in[i] = window[i] * in[i];
     }
     
-    memcpy(cx_in,(kiss_fft_cpx*) tx_in, signalSize*sizeof(SAMPLE));
+    memcpy(cx_in,(kiss_fft_cpx*) tx_in, (signalSize)*sizeof(SAMPLE));
+    //cx_in =(kiss_fft_cpx*) tx_in;
     
-    // Do the FFT
+    // Do the FFTr
     kiss_fftr(f_fft,(kiss_fft_scalar*) cx_in, cx_out);
     
     // Only return the real part
-    for (int i = 0; i < signalSize; i++){
+    for (int i = 0; i < signalSize/2; i++){
         // Output the magnitude spectrum
-        mag_out[i] = std::abs(sqrt(cx_out[i].r*cx_out[i].r + cx_out[i].i*cx_out[i].i));
+        mag_out[i] = sqrtf(cx_out[i].r*cx_out[i].r + cx_out[i].i*cx_out[i].i);
     }
     
-    /* Free memory */
-    // kiss_fft_cleanup();
-    
     return mag_out;
+}
+
+// Define the destructor.
+FFT::~FFT() {
+    // Deallocate the memory
+    kiss_fftr_free(f_fft);
+    delete [] window;
+    delete [] mag_out;
+    delete [] tx_in;
+    delete [] cx_out;
+    delete [] cx_in;
+    kiss_fft_cleanup();
 }
 

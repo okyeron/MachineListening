@@ -25,6 +25,7 @@ class FFT {
     int signalSize;
     
     FFT(int numSamples);
+    ~FFT();
     float* getSpectrum (const SAMPLE* in);
     
     kiss_fftr_cfg f_fft;

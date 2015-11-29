@@ -3,6 +3,25 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "audioCallback(void const*, void*, unsigned long, PaStreamCallbackTimeInfo const*, unsigned long, void*):main.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "*(float(*)[1024])in">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "FFT::getSpectrum(float const*):FFT.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "">
+            </PersistentString>
+            <PersistentString
+               value = "*(float(*)[1024])cx_out">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "getSpectrum:fft.c">
          <PersistentStrings>
             <PersistentString
