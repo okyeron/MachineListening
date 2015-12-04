@@ -14,11 +14,13 @@
 #include "FFT.h"
 #include "SpectralFeatures.h"
 
-#import <CoreAudio/CoreAudio.h>
-#import <AudioToolbox/AudioToolbox.h>
-#import <AudioUnit/AudioUnit.h>
-#import <CoreServices/CoreServices.h>
-#import <Carbon/Carbon.h>
+#ifdef __APPLE__
+    #import <CoreAudio/CoreAudio.h>
+    #import <AudioToolbox/AudioToolbox.h>
+    #import <AudioUnit/AudioUnit.h>
+    #import <CoreServices/CoreServices.h>
+    #import <Carbon/Carbon.h>
+#endif
 using namespace std;
 
 
