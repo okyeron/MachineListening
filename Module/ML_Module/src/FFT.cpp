@@ -6,7 +6,9 @@
 //  Copyright © 2015 Christopher Latina. All rights reserved.
 //
 
-#include "FFT.hpp"
+#include "FFT.h"
+using namespace std;
+
 
 FFT::FFT(int numSamples)
 {
@@ -38,7 +40,6 @@ float* FFT::getSpectrum (const SAMPLE* in)
     }
     
     memcpy(cx_in,(kiss_fft_cpx*) tx_in, (signalSize)*sizeof(SAMPLE));
-    //cx_in =(kiss_fft_cpx*) tx_in;
     
     // Do the FFTr
     kiss_fftr(f_fft,(kiss_fft_scalar*) cx_in, cx_out);
@@ -52,15 +53,15 @@ float* FFT::getSpectrum (const SAMPLE* in)
     return mag_out;
 }
 
-// Define the destructor.
-FFT::~FFT() {
-    // Deallocate the memory
-    kiss_fftr_free(f_fft);
-    delete [] window;
-    delete [] mag_out;
-    delete [] tx_in;
-    delete [] cx_out;
-    delete [] cx_in;
-    kiss_fft_cleanup();
-}
+//// Define the destructor.
+//FFT::~FFT() {
+//    // Deallocate the memory
+//    kiss_fftr_free(f_fft);
+//    delete [] window;
+//    delete [] mag_out;
+//    delete [] tx_in;
+//    delete [] cx_out;
+//    delete [] cx_in;
+//    kiss_fft_cleanup();
+//}
 

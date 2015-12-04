@@ -63,10 +63,10 @@
 		A46D76D91BEC6CA200856676 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		A4B944411C04E08000B49869 /* ML_Module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ML_Module; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4B94CDF1C04F5CB00B49869 /* FFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT.cpp; sourceTree = "<group>"; };
-		A4B94CE01C04F5CB00B49869 /* FFT.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FFT.hpp; sourceTree = "<group>"; };
+		A4B94CE01C04F5CB00B49869 /* FFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFT.h; sourceTree = "<group>"; };
 		A4B94CE71C04F5CB00B49869 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		A4B94CE91C04F5CB00B49869 /* SpectralFeatures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpectralFeatures.cpp; sourceTree = "<group>"; };
-		A4B94CEA1C04F5CB00B49869 /* SpectralFeatures.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SpectralFeatures.hpp; sourceTree = "<group>"; };
+		A4B94CEA1C04F5CB00B49869 /* SpectralFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpectralFeatures.h; sourceTree = "<group>"; };
 		A4B94CF11C04F74300B49869 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		A4B94CF31C04F74A00B49869 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		A4B94CF51C04F74F00B49869 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
@@ -199,10 +199,10 @@
 			isa = PBXGroup;
 			children = (
 				A4B94CDF1C04F5CB00B49869 /* FFT.cpp */,
-				A4B94CE01C04F5CB00B49869 /* FFT.hpp */,
+				A4B94CE01C04F5CB00B49869 /* FFT.h */,
 				A4B94CE71C04F5CB00B49869 /* main.cpp */,
 				A4B94CE91C04F5CB00B49869 /* SpectralFeatures.cpp */,
-				A4B94CEA1C04F5CB00B49869 /* SpectralFeatures.hpp */,
+				A4B94CEA1C04F5CB00B49869 /* SpectralFeatures.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -506,6 +506,7 @@
 				A4B944471C04E08000B49869 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

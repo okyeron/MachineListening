@@ -6,7 +6,7 @@
 //  Copyright © 2015 Christopher Latina. All rights reserved.
 //
 
-#include "SpectralFeatures.hpp"
+#include "SpectralFeatures.h"
 
 SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     binSize = numBins;
@@ -50,7 +50,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     
     if (spectrum_sum > 0.001){
         //Calculate Spectral Crest
-        crest = max_abs_array(spectrum, binSize) / spectrum_abs_sum;
+        calculateSpectralCrest(spectrum, spectrum_abs_sum);
         
         //Calculate Spectral Centroid
         calculateSpectralCentroid(spectrum, spectrum_sum);
@@ -84,17 +84,20 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     // TODO: This needs to be mapped to frequency and 1v / octave
 }
 
-float SpectralFeatures::max_abs_array(float a[], float num_elements)
-{
-    int i, max=1.175494e-38;
-    for (i=0; i<num_elements; i++)
-    {
-        if (fabsf(a[i])>max)
-        {
-            max=fabsf(a[i]);
-        }
-    }
-    return(max);
+void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_abs_sum){
+    crest = max_abs_array(spectrum, binSize) / spectrum_abs_sum;
+}
+
+void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
+//    float min_thresh =1e-20;
+    
+//    float *xLog = log_array(spectrum, binSize);
+//    xLog = add_array(spectrum,binsize);
+//    
+//    vtf     = exp(mean(XLog,1)) ./ (mean(X,1));
+//    
+//    // avoid NaN for silence frames
+//    vtf (sum(X,1) == 0) = 0;
 }
 
 float SpectralFeatures::getSpectralFlux(){

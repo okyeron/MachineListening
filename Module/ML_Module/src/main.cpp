@@ -11,14 +11,16 @@
 #include <stdio.h>
 #include <string.h>
 #include "portaudio.h"
-#include "fft.hpp"
-#include "SpectralFeatures.hpp"
+#include "fft.h"
+#include "SpectralFeatures.h"
 
 #import <CoreAudio/CoreAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <AudioUnit/AudioUnit.h>
 #import <CoreServices/CoreServices.h>
 #import <Carbon/Carbon.h>
+using namespace std;
+
 
 /*
  ** Note that many of the older ISA sound cards on PCs do NOT support
@@ -53,6 +55,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     (void) userData;
     float flux;
     float centroid;
+    
+    /* Initialize features to zero */
     
     if( inputBuffer == NULL)
     {
