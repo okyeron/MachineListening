@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "portaudio.h"
-#include "fft.h"
+#include "FFT.h"
 #include "SpectralFeatures.h"
 
 #import <CoreAudio/CoreAudio.h>
