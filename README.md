@@ -16,8 +16,8 @@ I suggest using ALSA. The makefile includes all of the following
 
 ```-lrt -lasound -ljack -lpthread```
 
-Replace the libportaudio.a file (currently compiled for testing on Mac OSX) with the linux version.
+Replace the libportaudio.a file (currently compiled for testing on Mac OSX) with the linux version inside /Module/ML_Module/include/portaudio
 
-```cp lib/.libs/libportaudio.a /YOUR/PROJECT/DIR```
+```cp lib/.libs/libportaudio.a /YOUR/PROJECT/DIR/Module/ML_Module/include/portaudio```
 
 Now you can cd into the Module/ML_Module directory and run `make`
