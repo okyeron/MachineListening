@@ -119,7 +119,7 @@ float SpectralFeatures::getSpectralFlux(){
         printf("Centroid: %f, \n", centroid);
         #ifdef __arm__
             digitalWrite(4, HIGH);
-            delay(1000);
+            delay(250);
             digitalWrite(4, LOW);
             pwmWrite(18, 50);
         #endif
