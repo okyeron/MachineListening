@@ -7,6 +7,9 @@
 //
 
 #include "SpectralFeatures.h"
+#ifdef __arm__
+    #include <wiringPi.h>
+#endif
 
 SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     binSize = numBins;
@@ -108,6 +111,9 @@ float SpectralFeatures::getSpectralFlux(){
         onset = 1;
         printf("Onset: %i, Flux: %f\n", onset, flux);
         printf("Centroid: %f, \n", centroid);
+        #ifdef __arm__
+            digitalWrite(8, 1);
+        #endif
     }
     
     return flux;

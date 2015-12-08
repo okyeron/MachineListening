@@ -14,6 +14,10 @@
 #include "FFT.h"
 #include "SpectralFeatures.h"
 
+#ifdef __arm__
+    #include <wiringPi.h>
+#endif
+
 #ifdef __APPLE__
     #import <CoreAudio/CoreAudio.h>
     #import <AudioToolbox/AudioToolbox.h>
@@ -43,6 +47,7 @@ static int gNumNoInputs = 0;
  ** It may be called at interrupt level on some machines so don't do anything
  ** that could mess up the system like calling malloc() or free().
  */
+
 static int audioCallback( const void *inputBuffer, void *outputBuffer,
                          unsigned long framesPerBuffer,
                          const PaStreamCallbackTimeInfo* timeInfo,
@@ -74,6 +79,9 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         spectrum = fft->getSpectrum(in);
         if(!isnan(*spectrum) && *spectrum != INFINITY)
         {
+            #ifdef __arm__
+                digitalWrite(8, 0);
+            #endif
             features->extractFeatures(spectrum);
             flux = features->getSpectralFlux();
             centroid = features->getSpectralCentroid();
@@ -159,4 +167,5 @@ error:
     fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
     return -1;
 }
+
 
