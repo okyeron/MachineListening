@@ -17,6 +17,12 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     prevFlux = 0.0;
     fifo = new float[binSize];
     fifo = initArray(fifo, binSize);
+     #ifdef __arm__
+        wiringPiSetupGpio();
+        pinMode(4, OUTPUT);
+        pinMode(23, INPUT);
+        pinMode(18, PWM_OUTPUT);
+    #endif
 }
 
 /*  Method to extract spectral features.
@@ -112,9 +118,10 @@ float SpectralFeatures::getSpectralFlux(){
         printf("Onset: %i, Flux: %f\n", onset, flux);
         printf("Centroid: %f, \n", centroid);
         #ifdef __arm__
-            digitalWrite(7, HIGH);
-            delay(10)
-            digitalWrite(7, LOW);
+            digitalWrite(4, HIGH);
+            delay(1000);
+            digitalWrite(4, LOW);
+            pwmWrite(18, 50);
         #endif
     }
     
