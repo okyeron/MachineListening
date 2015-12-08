@@ -104,7 +104,7 @@ void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 }
 
 float SpectralFeatures::getSpectralFlux(){
-    float thresh = 0.01;
+    float thresh = 0.05;
     int onset = 0;
     /* Print if greater than threshold */
     if(flux > thresh){
@@ -112,7 +112,9 @@ float SpectralFeatures::getSpectralFlux(){
         printf("Onset: %i, Flux: %f\n", onset, flux);
         printf("Centroid: %f, \n", centroid);
         #ifdef __arm__
-            digitalWrite(8, 1);
+            digitalWrite(pin, HIGH);
+            delay(10)
+            digitalWrite(pin, LOW);
         #endif
     }
     

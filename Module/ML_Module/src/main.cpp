@@ -79,9 +79,6 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         spectrum = fft->getSpectrum(in);
         if(!isnan(*spectrum) && *spectrum != INFINITY)
         {
-            #ifdef __arm__
-                digitalWrite(8, 0);
-            #endif
             features->extractFeatures(spectrum);
             flux = features->getSpectralFlux();
             centroid = features->getSpectralCentroid();
