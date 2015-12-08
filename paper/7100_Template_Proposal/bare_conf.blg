@@ -1,0 +1,60 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: bare_conf.aux
+The style file: acm.bst
+Database file #1: biblio.bib
+Warning--entry type for "mutable" isn't style-file defined
+--line 80 of file biblio.bib
+Warning--entry type for "terminaltedium" isn't style-file defined
+--line 89 of file biblio.bib
+Warning--entry type for "headoff" isn't style-file defined
+--line 98 of file biblio.bib
+Warning--entry type for "csounds" isn't style-file defined
+--line 109 of file biblio.bib
+Warning--entry type for "nickcollins" isn't style-file defined
+--line 118 of file biblio.bib
+Warning--entry type for "idreamof" isn't style-file defined
+--line 127 of file biblio.bib
+Warning--empty journal in brent2011
+You've used 11 entries,
+            2253 wiz_defined-function locations,
+            578 strings with 4947 characters,
+and the built_in function-call counts, 2523 in all, are:
+= -- 231
+> -- 92
+< -- 0
++ -- 39
+- -- 28
+* -- 138
+:= -- 420
+add.period$ -- 27
+call.type$ -- 11
+change.case$ -- 47
+chr.to.int$ -- 0
+cite$ -- 12
+duplicate$ -- 92
+empty$ -- 246
+format.name$ -- 28
+if$ -- 524
+int.to.chr$ -- 0
+int.to.str$ -- 11
+missing$ -- 5
+newline$ -- 52
+num.names$ -- 22
+pop$ -- 66
+preamble$ -- 1
+purify$ -- 36
+quote$ -- 0
+skip$ -- 83
+stack$ -- 0
+substring$ -- 112
+swap$ -- 21
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 44
+warning$ -- 1
+while$ -- 28
+width$ -- 13
+write$ -- 93
+(There were 7 warnings)
