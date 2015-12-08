@@ -112,9 +112,9 @@ float SpectralFeatures::getSpectralFlux(){
         printf("Onset: %i, Flux: %f\n", onset, flux);
         printf("Centroid: %f, \n", centroid);
         #ifdef __arm__
-            digitalWrite(pin, HIGH);
+            digitalWrite(7, HIGH);
             delay(10)
-            digitalWrite(pin, LOW);
+            digitalWrite(7, LOW);
         #endif
     }
     
