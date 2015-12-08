@@ -20,8 +20,8 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
      #ifdef __arm__
         wiringPiSetupGpio();
         pinMode(4, OUTPUT);
-        pinMode(23, INPUT);
-        pinMode(18, PWM_OUTPUT);
+//        pinMode(23, INPUT);
+//        pinMode(18, PWM_OUTPUT);
     #endif
 }
 
@@ -72,7 +72,7 @@ void SpectralFeatures::calculateSpectralFlux(float power)
     flux = sqrt(power) / (binSize);
     
     // Low pass filter
-    float alpha = 0.01;
+    float alpha = 0.1;
     flux = (1-alpha)*flux + alpha * prevFlux;
     
     /* Save previous Spectral Flux */
@@ -110,7 +110,7 @@ void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 }
 
 float SpectralFeatures::getSpectralFlux(){
-    float thresh = 0.05;
+    float thresh = 0.7;
     int onset = 0;
     /* Print if greater than threshold */
     if(flux > thresh){
@@ -121,7 +121,7 @@ float SpectralFeatures::getSpectralFlux(){
             digitalWrite(4, HIGH);
             delay(250);
             digitalWrite(4, LOW);
-            pwmWrite(18, 50);
+//            pwmWrite(18, 50);
         #endif
     }
     
