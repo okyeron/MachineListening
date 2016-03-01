@@ -17,11 +17,22 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     prevFlux = 0.0;
     fifo = new float[binSize];
     fifo = initArray(fifo, binSize);
+    
+    //Move this to a GPIO class
      #ifdef __arm__
         wiringPiSetupGpio();
-        pinMode(4, OUTPUT);
-//        pinMode(23, INPUT);
-//        pinMode(18, PWM_OUTPUT);
+        pinMode(16, OUTPUT); //Onset Trigger output
+    
+        pinMode(26, PWM_OUTPUT); //Spectral Feature output
+    
+        //pinMode(23, INPUT); // Onset Level threshold
+    
+        // Onset time threshold
+    
+        // Spectral feature, hipass thresh
+    
+        // Spectral feature, lowpass thresh
+    
     #endif
 }
 
@@ -33,10 +44,14 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     float spectrum_sq[binSize];
     float spectrum_sum = 0.0;
     float spectrum_abs_sum = 0.0;
+    float halfwave = 0.0;
     
     for (int i=0; i<binSize; i++) {
         // Calculate the difference between the current block and the previous block's spectrum
         float diff = spectrum[i] - fifo[i];
+        
+        // Half wave recitification.
+        halfwave += (diff + fabsf(diff))/2.0;
         
         //Calculate the square
         power += diff * diff;
@@ -44,6 +59,8 @@ void SpectralFeatures::extractFeatures(float* spectrum)
         //Sum of the magnitude spectrum
         spectrum_sum += spectrum[i];
         spectrum_abs_sum += fabsf(spectrum[i]);
+        
+        
         spectrum_sq[i] = spectrum[i] * spectrum[i];
     }
     
@@ -51,7 +68,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     setFifo(spectrum,binSize);
     
     /* Calculate Spectral Flux */
-    calculateSpectralFlux(power);
+    calculateSpectralFlux(halfwave);
     
     // Silent frames
     centroid = 0.0;
@@ -66,10 +83,10 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     }
 }
 
-void SpectralFeatures::calculateSpectralFlux(float power)
+void SpectralFeatures::calculateSpectralFlux(float halfwave)
 {
     //Calculate Spectral Flux
-    flux = sqrt(power) / (binSize);
+    flux = halfwave / (binSize);
     
     // Low pass filter
     float alpha = 0.1;
@@ -89,6 +106,9 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
+    
+    // printf("Centroid: %f, \n", centroid);
+    
     
     // TODO: This needs to be mapped to frequency and 1v / octave
 }
@@ -116,11 +136,10 @@ float SpectralFeatures::getSpectralFlux(){
     if(flux > thresh){
         onset = 1;
         printf("Onset: %i, Flux: %f\n", onset, flux);
-        printf("Centroid: %f, \n", centroid);
         #ifdef __arm__
-            digitalWrite(4, HIGH);
+            digitalWrite(16, HIGH);
             delay(250);
-            digitalWrite(4, LOW);
+            digitalWrite(16, LOW);
 //            pwmWrite(18, 50);
         #endif
     }

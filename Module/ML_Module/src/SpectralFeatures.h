@@ -43,7 +43,7 @@ public:
     float getRMS();
     
 protected:
-    void calculateSpectralFlux(float power);
+    void calculateSpectralFlux(float halfwave);
     void calculateSpectralCentroid(float* spectrum, float spectrum_sum);
     void calculateSpectralCrest(float* spectrum, float spectrum_abs_sum);
     void calculateSpectralFlatness(float* spectrum);
