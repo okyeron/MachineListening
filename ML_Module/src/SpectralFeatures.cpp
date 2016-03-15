@@ -75,9 +75,6 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     /* Calculate Spectral Flux */
     calculateSpectralFlux(halfwave);
     
-    /* Calculate Spectral Centroid */
-    calculateSpectralCentroid(spectrum, spectrum_sum);
-    
     // Silent frames
     centroid = 0.0;
     crest = 0.0;
@@ -115,7 +112,7 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
-    printf("Centroid: %f, \n", centroid);
+    //printf("Centroid: %f, \n", centroid);
     //pwmWrite(16, 50);
     
     // TODO: This needs to be mapped to frequency and 1v / octave
@@ -138,7 +135,7 @@ void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 }
 
 float SpectralFeatures::getSpectralFlux(){
-    float thresh = 0.7;
+    float thresh = 0.1;
     int onset = 0;
     /* Print if greater than threshold */
     //if(flux > thresh){

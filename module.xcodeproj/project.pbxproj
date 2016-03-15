@@ -7,11 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A442F6AC1BF5690D00F523E1 /* fft.c in Sources */ = {isa = PBXBuildFile; fileRef = A442F6AA1BF5690D00F523E1 /* fft.c */; settings = {ASSET_TAGS = (); }; };
-		A442F6B51BF56AB300F523E1 /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = A442F6B01BF56AB300F523E1 /* kiss_fft.c */; settings = {ASSET_TAGS = (); }; };
-		A442F6B61BF56AB300F523E1 /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = A442F6B21BF56AB300F523E1 /* kiss_fftr.c */; settings = {ASSET_TAGS = (); }; };
-		A46D76D81BEC6BA300856676 /* libportaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A46D76D41BEC6BA300856676 /* libportaudio.a */; settings = {ASSET_TAGS = (); }; };
-		A46D76DA1BEC6CA200856676 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = A46D76D91BEC6CA200856676 /* main.c */; settings = {ASSET_TAGS = (); }; };
 		A4B94CEB1C04F5CB00B49869 /* FFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CDF1C04F5CB00B49869 /* FFT.cpp */; settings = {ASSET_TAGS = (); }; };
 		A4B94CEF1C04F5CB00B49869 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CE71C04F5CB00B49869 /* main.cpp */; settings = {ASSET_TAGS = (); }; };
 		A4B94CF01C04F5CB00B49869 /* SpectralFeatures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CE91C04F5CB00B49869 /* SpectralFeatures.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -23,7 +18,6 @@
 		A4B94D071C04F88600B49869 /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CFE1C04F88600B49869 /* kiss_fft.c */; settings = {ASSET_TAGS = (); }; };
 		A4B94D081C04F88600B49869 /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = A4B94D001C04F88600B49869 /* kiss_fftr.c */; settings = {ASSET_TAGS = (); }; };
 		A4B94D091C04F88600B49869 /* libportaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B94D041C04F88600B49869 /* libportaudio.a */; settings = {ASSET_TAGS = (); }; };
-		A4FFB99A1BF6C002008B7AF1 /* spectral_features.c in Sources */ = {isa = PBXBuildFile; fileRef = A4FFB9981BF6C002008B7AF1 /* spectral_features.c */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,20 +42,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A442F6AA1BF5690D00F523E1 /* fft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fft.c; sourceTree = "<group>"; };
-		A442F6AB1BF5690D00F523E1 /* fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fft.h; sourceTree = "<group>"; };
-		A442F6AF1BF56AB300F523E1 /* _kiss_fft_guts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _kiss_fft_guts.h; sourceTree = "<group>"; };
-		A442F6B01BF56AB300F523E1 /* kiss_fft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kiss_fft.c; sourceTree = "<group>"; };
-		A442F6B11BF56AB300F523E1 /* kiss_fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kiss_fft.h; sourceTree = "<group>"; };
-		A442F6B21BF56AB300F523E1 /* kiss_fftr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kiss_fftr.c; sourceTree = "<group>"; };
-		A442F6B31BF56AB300F523E1 /* kiss_fftr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kiss_fftr.h; sourceTree = "<group>"; };
-		A442F6B41BF56AB300F523E1 /* kissfft.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = kissfft.hh; sourceTree = "<group>"; };
-		A46D76921BEC54EB00856676 /* module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = module; sourceTree = BUILT_PRODUCTS_DIR; };
-		A46D76D41BEC6BA300856676 /* libportaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libportaudio.a; sourceTree = "<group>"; };
-		A46D76D51BEC6BA300856676 /* pa_linux_alsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_linux_alsa.h; sourceTree = "<group>"; };
-		A46D76D61BEC6BA300856676 /* portaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = portaudio.h; sourceTree = "<group>"; };
-		A46D76D91BEC6CA200856676 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		A4B944411C04E08000B49869 /* ML_Module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ML_Module; sourceTree = BUILT_PRODUCTS_DIR; };
+		A46D76921BEC54EB00856676 /* module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = module; path = /Users/chrislatina/Documents/Sites/MachineListening/build/Debug/module; sourceTree = "<absolute>"; };
+		A4B944411C04E08000B49869 /* ML_Module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = ML_Module; path = /Users/chrislatina/Documents/Sites/MachineListening/build/Debug/ML_Module; sourceTree = "<absolute>"; };
 		A4B94CDF1C04F5CB00B49869 /* FFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT.cpp; sourceTree = "<group>"; };
 		A4B94CE01C04F5CB00B49869 /* FFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFT.h; sourceTree = "<group>"; };
 		A4B94CE71C04F5CB00B49869 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -81,8 +63,6 @@
 		A4B94D041C04F88600B49869 /* libportaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libportaudio.a; sourceTree = "<group>"; };
 		A4B94D051C04F88600B49869 /* pa_linux_alsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_linux_alsa.h; sourceTree = "<group>"; };
 		A4B94D061C04F88600B49869 /* portaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = portaudio.h; sourceTree = "<group>"; };
-		A4FFB9981BF6C002008B7AF1 /* spectral_features.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = spectral_features.c; sourceTree = "<group>"; };
-		A4FFB9991BF6C002008B7AF1 /* spectral_features.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spectral_features.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,7 +70,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A46D76D81BEC6BA300856676 /* libportaudio.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,19 +89,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A442F6AE1BF56AB300F523E1 /* kissfft */ = {
-			isa = PBXGroup;
-			children = (
-				A442F6AF1BF56AB300F523E1 /* _kiss_fft_guts.h */,
-				A442F6B01BF56AB300F523E1 /* kiss_fft.c */,
-				A442F6B11BF56AB300F523E1 /* kiss_fft.h */,
-				A442F6B21BF56AB300F523E1 /* kiss_fftr.c */,
-				A442F6B31BF56AB300F523E1 /* kiss_fftr.h */,
-				A442F6B41BF56AB300F523E1 /* kissfft.hh */,
-			);
-			path = kissfft;
-			sourceTree = "<group>";
-		};
 		A46D76891BEC54EB00856676 = {
 			isa = PBXGroup;
 			children = (
@@ -131,59 +97,8 @@
 				A4B94CF51C04F74F00B49869 /* AudioUnit.framework */,
 				A4B94CF31C04F74A00B49869 /* CoreFoundation.framework */,
 				A4B94CF11C04F74300B49869 /* CoreServices.framework */,
-				A46D76941BEC54EB00856676 /* module */,
 				A4B944421C04E08000B49869 /* ML_Module */,
-				A46D76931BEC54EB00856676 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		A46D76931BEC54EB00856676 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A46D76921BEC54EB00856676 /* module */,
-				A4B944411C04E08000B49869 /* ML_Module */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		A46D76941BEC54EB00856676 /* module */ = {
-			isa = PBXGroup;
-			children = (
-				A46D76C11BEC5A6F00856676 /* include */,
-				A46D76B41BEC593B00856676 /* src */,
-			);
-			path = module;
-			sourceTree = "<group>";
-		};
-		A46D76B41BEC593B00856676 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				A46D76D91BEC6CA200856676 /* main.c */,
-				A442F6AA1BF5690D00F523E1 /* fft.c */,
-				A442F6AB1BF5690D00F523E1 /* fft.h */,
-				A4FFB9981BF6C002008B7AF1 /* spectral_features.c */,
-				A4FFB9991BF6C002008B7AF1 /* spectral_features.h */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
-		A46D76C11BEC5A6F00856676 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				A442F6AE1BF56AB300F523E1 /* kissfft */,
-				A46D76D31BEC6BA300856676 /* portaudio */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		A46D76D31BEC6BA300856676 /* portaudio */ = {
-			isa = PBXGroup;
-			children = (
-				A46D76D41BEC6BA300856676 /* libportaudio.a */,
-				A46D76D51BEC6BA300856676 /* pa_linux_alsa.h */,
-				A46D76D61BEC6BA300856676 /* portaudio.h */,
-			);
-			path = portaudio;
 			sourceTree = "<group>";
 		};
 		A4B944421C04E08000B49869 /* ML_Module */ = {
@@ -301,7 +216,7 @@
 				en,
 			);
 			mainGroup = A46D76891BEC54EB00856676;
-			productRefGroup = A46D76931BEC54EB00856676 /* Products */;
+			productRefGroup = A46D76891BEC54EB00856676;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -316,11 +231,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A442F6AC1BF5690D00F523E1 /* fft.c in Sources */,
-				A4FFB99A1BF6C002008B7AF1 /* spectral_features.c in Sources */,
-				A46D76DA1BEC6CA200856676 /* main.c in Sources */,
-				A442F6B51BF56AB300F523E1 /* kiss_fft.c in Sources */,
-				A442F6B61BF56AB300F523E1 /* kiss_fftr.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
