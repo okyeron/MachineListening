@@ -23,14 +23,12 @@ LFLAGS = -Linclude/portaudio
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname 
 #   option, something like (this will link in libmylib.so and libm.so:
-ifeq ($(UNAME_S),Linux)
+#ifeq ($(UNAME_S),Linux)
     LIBS = -lportaudio -lwiringPi -lrt -lasound -ljack -lpthread
-
-endif
-ifeq ($(UNAME_S),Darwin)
-    LIBS = -lportaudio -lrt -lasound -ljack -lpthread
-
-endif
+#endif
+#ifeq ($(UNAME_S),Darwin)
+#    LIBS = -lportaudio -lrt -lasound -ljack -lpthread
+#endif
 
 # define Apple frameworks if compiling for OSX
 UNAME_S := $(shell uname -s)

@@ -21,11 +21,16 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     //Move this to a GPIO class
      #ifdef __arm__
         wiringPiSetupGpio();
-        pinMode(16, OUTPUT); //Onset Trigger output
     
-        pinMode(26, PWM_OUTPUT); //Spectral Feature output
+        // GPIO Digital Output
+        pinMode(16, OUTPUT); //Spectral Feature output
     
-        //pinMode(23, INPUT); // Onset Level threshold
+        pinMode(26, PWM_OUTPUT); //Onset Trigger output
+    
+        // Switches
+        pinMode(23, INPUT); //Switch 1
+        pinMode(24, INPUT); //Switch 2
+        pinMode(25, INPUT); //Switch 3
     
         // Onset time threshold
     
@@ -70,6 +75,9 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     /* Calculate Spectral Flux */
     calculateSpectralFlux(halfwave);
     
+    /* Calculate Spectral Centroid */
+    calculateSpectralCentroid(spectrum, spectrum_sum);
+    
     // Silent frames
     centroid = 0.0;
     crest = 0.0;
@@ -107,8 +115,8 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
-    // printf("Centroid: %f, \n", centroid);
-    
+    printf("Centroid: %f, \n", centroid);
+    //pwmWrite(16, 50);
     
     // TODO: This needs to be mapped to frequency and 1v / octave
 }
@@ -133,16 +141,15 @@ float SpectralFeatures::getSpectralFlux(){
     float thresh = 0.7;
     int onset = 0;
     /* Print if greater than threshold */
-    if(flux > thresh){
+    //if(flux > thresh){
         onset = 1;
         printf("Onset: %i, Flux: %f\n", onset, flux);
         #ifdef __arm__
-            digitalWrite(16, HIGH);
+            digitalWrite(26, HIGH);
             delay(250);
-            digitalWrite(16, LOW);
-//            pwmWrite(18, 50);
+            digitalWrite(26, LOW);
         #endif
-    }
+    //}
     
     return flux;
 }
