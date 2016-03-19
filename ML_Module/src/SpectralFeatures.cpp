@@ -197,8 +197,8 @@ float SpectralFeatures::getSpectralFlux(){
         printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
         #ifdef __arm__
             digitalWrite(26, HIGH);
-            int delay = (int)(RESOLUTION - readADC(0)) / 10.0;
-            delay(delay);
+            int delayTime = (int)(RESOLUTION - readADC(0)) / 10.0;
+            delay(delayTime);
             digitalWrite(26, LOW);
         #endif
     }
