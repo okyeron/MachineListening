@@ -24,7 +24,7 @@ LFLAGS = -Linclude/portaudio
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname 
 #   option, something like (this will link in libmylib.so and libm.so:
 #ifeq ($(UNAME_S),Linux)
-    LIBS = -lportaudio -lwiringPi -lrt -lasound -ljack -lpthread
+    LIBS = -lportaudio -lwiringPi -lrt -lasound -lpthread
 #endif
 #ifeq ($(UNAME_S),Darwin)
 #    LIBS = -lportaudio -lrt -lasound -ljack -lpthread
