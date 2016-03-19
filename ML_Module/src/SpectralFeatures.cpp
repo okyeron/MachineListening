@@ -9,6 +9,7 @@
 #include "SpectralFeatures.h"
 #ifdef __arm__
     #include <wiringPi.h>
+    #include <softPwm.h>
 #endif
 
 SpectralFeatures::SpectralFeatures (int numBins, int fs) {
@@ -112,10 +113,12 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
-    //printf("Centroid: %f, \n", centroid);
-    //pwmWrite(16, 50);
+    printf("Centroid: %f, \n", centroid);
     
-    // TODO: This needs to be mapped to frequency and 1v / octave
+    #ifdef __arm__
+        // TODO: This needs to be mapped to frequency and 1v / octave
+        softPwmWrite (16,centroid/40);
+    #endif
 }
 
 void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_abs_sum){
@@ -124,7 +127,7 @@ void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_ab
 
 void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 //    float min_thresh =1e-20;
-    
+//    
 //    float *xLog = log_array(spectrum, binSize);
 //    xLog = add_array(spectrum,binsize);
 //    
@@ -135,10 +138,10 @@ void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 }
 
 float SpectralFeatures::getSpectralFlux(){
-    float thresh = 0.1;
+    float thresh = 0.5;
     int onset = 0;
     /* Print if greater than threshold */
-    //if(flux > thresh){
+    if(flux > thresh){
         onset = 1;
         printf("Onset: %i, Flux: %f\n", onset, flux);
         #ifdef __arm__
@@ -146,7 +149,7 @@ float SpectralFeatures::getSpectralFlux(){
             delay(250);
             digitalWrite(26, LOW);
         #endif
-    //}
+    }
     
     return flux;
 }
