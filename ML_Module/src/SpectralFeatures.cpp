@@ -42,6 +42,7 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     //Move this to a GPIO class
      #ifdef __arm__
         wiringPiSetupGpio();
+        wiringPiSPISetup(ADC_SPI_CHANNEL, ADC_SPI_SPEED);
     
         // GPIO Digital Output
         pinMode(16, OUTPUT); //Spectral Feature output
@@ -66,6 +67,7 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
 uint16_t adc[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //  store prev.
 uint8_t  map_adc[8] = {5, 2, 7, 6, 3, 0, 1, 4}; // map to panel [1 - 2 - 3; 4 - 5 - 6; 7, 8]
 
+uint8_t SENDMSG;
 
 uint16_t readADC(int _channel){ // 12 bit
 #ifdef __arm__
@@ -186,16 +188,17 @@ void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 }
 
 float SpectralFeatures::getSpectralFlux(){
-    float thresh = 1.5;
+    float thresh = (float) 5 * (RESOLUTION - readADC(1)) / (float) RESOLUTION ;
     int onset = 0;
     /* Print if greater than threshold */
     if(flux > thresh){
         onset = 1;
         printf("Onset: %i, Flux: %f\n", onset, flux);
-        printf("ADC: %i, %i, %i, %i, %i, %i, %i, %i\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
+        printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
         #ifdef __arm__
             digitalWrite(26, HIGH);
-            delay(25);
+            int delay = (int)(RESOLUTION - readADC(0)) / 10.0;
+            delay(delay);
             digitalWrite(26, LOW);
         #endif
     }
