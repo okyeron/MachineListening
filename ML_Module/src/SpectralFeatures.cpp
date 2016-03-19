@@ -8,9 +8,29 @@
 
 #include "SpectralFeatures.h"
 #ifdef __arm__
+    #include <stdio.h>
+    #include <stdint.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <time.h>
+
+    #include <sys/socket.h>
+    #include <arpa/inet.h>
+    #include <netinet/tcp.h>
+    #include <unistd.h>
+    #include <sys/time.h>
+
+    #include <math.h>
     #include <wiringPi.h>
     #include <softPwm.h>
+    #include <wiringPiSPI.h>
 #endif
+
+#define ADC_SPI_CHANNEL 1
+#define ADC_SPI_SPEED 1000000
+#define ADC_NUM_CHANNELS 8
+#define RESOLUTION 4095 // 1023 if using MCP3008; 4095 if using MCP3208
+#define DEADBAND 2
 
 SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     binSize = numBins;
@@ -25,8 +45,9 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     
         // GPIO Digital Output
         pinMode(16, OUTPUT); //Spectral Feature output
+        softPwmCreate(16,0,1000);
     
-        pinMode(26, PWM_OUTPUT); //Onset Trigger output
+        pinMode(26, OUTPUT); //Onset Trigger output
     
         // Switches
         pinMode(23, INPUT); //Switch 1
@@ -40,6 +61,33 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
         // Spectral feature, lowpass thresh
     
     #endif
+}
+
+uint16_t adc[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //  store prev.
+uint8_t  map_adc[8] = {5, 2, 7, 6, 3, 0, 1, 4}; // map to panel [1 - 2 - 3; 4 - 5 - 6; 7, 8]
+
+
+uint16_t readADC(int _channel){ // 12 bit
+#ifdef __arm__
+    uint8_t spi_data[3];
+    uint8_t input_mode = 1; // single ended = 1, differential = 0
+    uint16_t result, tmp;
+    
+    spi_data[0] = 0x04; // start flag
+    spi_data[0] |= (input_mode<<1); // shift input_mode
+    spi_data[0] |= (_channel>>2) & 0x01; // add msb of channel in our first command byte
+    
+    spi_data[1] = _channel<<6;
+    spi_data[2] = 0x00;
+    
+    wiringPiSPIDataRW(ADC_SPI_CHANNEL, spi_data, 3);
+    result = (spi_data[1] & 0x0f)<<8 | spi_data[2];
+    tmp = adc[_channel]; // prev.
+    if ( (result - tmp) > DEADBAND || (tmp - result) > DEADBAND ) { tmp = result ; SENDMSG = 1; }
+    adc[_channel] = tmp;
+    return tmp;
+#endif
+    return 0;
 }
 
 /*  Method to extract spectral features.
@@ -113,11 +161,11 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
-    printf("Centroid: %f, \n", centroid);
+    //printf("Centroid: %f, \n", centroid);
     
-    #ifdef __arm__
+    #ifdef __arm__n
         // TODO: This needs to be mapped to frequency and 1v / octave
-        softPwmWrite (16,centroid/40);
+        softPwmWrite (16,centroid/2);
     #endif
 }
 
@@ -138,15 +186,16 @@ void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 }
 
 float SpectralFeatures::getSpectralFlux(){
-    float thresh = 0.5;
+    float thresh = 1.5;
     int onset = 0;
     /* Print if greater than threshold */
     if(flux > thresh){
         onset = 1;
         printf("Onset: %i, Flux: %f\n", onset, flux);
+        printf("ADC: %i, %i, %i, %i, %i, %i, %i, %i\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
         #ifdef __arm__
             digitalWrite(26, HIGH);
-            delay(250);
+            delay(25);
             digitalWrite(26, LOW);
         #endif
     }
