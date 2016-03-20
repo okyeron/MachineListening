@@ -193,7 +193,7 @@ float SpectralFeatures::getSpectralFlux(){
     /* Print if greater than threshold */
     if(flux > thresh){
         onset = 1;
-        printf("Onset: %i, Flux: %f\n", onset, flux);
+        printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
         #ifdef __arm__
             digitalWrite(26, HIGH);
