@@ -171,7 +171,7 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     
     #ifdef __arm__
         // TODO: This needs to be mapped to frequency and 1v / octave
-        softPwmWrite (16,centroid/2);
+        softPwmWrite (16,centroid/200.0);
     #endif
 }
 
@@ -199,12 +199,12 @@ float SpectralFeatures::getSpectralFlux(){
     Clock::time_point timeCompare = Clock::now();
     milliseconds ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_threshTime);
     
-    printf("TimePassed: .... %lld\n", ms.count());
+   // printf("TimePassed: .... %lld\n", ms.count());
 
     #ifdef __arm__
     // Set voltage to low if delayTime has passed
     if(ms.count() >= delayTime){
-	printf("DelayTime: %f, TimePassed: %f\n",delayTime, timePassed);
+	//printf("DelayTime: %f\n",delayTime);
         digitalWrite(26, LOW);
     }
     #endif
@@ -212,7 +212,7 @@ float SpectralFeatures::getSpectralFlux(){
     if(flux > thresh && ms.count() >= delayTime){
         onset = 1;
         printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
-        printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
+        //printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
         // Update the last read time of threshold
         t_threshTime = Clock::now();
         #ifdef __arm__
@@ -221,7 +221,7 @@ float SpectralFeatures::getSpectralFlux(){
     }
 
     // Calculate delayTime (in ms) 0 - 4.096 s
-    delayTime = (float)(RESOLUTION - readADC(0));
+    delayTime = (float)(RESOLUTION - readADC(0)) / 100.0;
 
     return flux;
 }
