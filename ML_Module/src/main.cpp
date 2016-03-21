@@ -35,7 +35,7 @@ using namespace std;
  */
 #define SAMPLE_RATE         (44100)
 #define PA_SAMPLE_TYPE      paFloat32
-#define FRAMES_PER_BUFFER   (512)
+#define FRAMES_PER_BUFFER   (1024)
 
 typedef float SAMPLE;
 FFT *fft;
@@ -89,8 +89,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         
         for( i=0; i<framesPerBuffer; i++ )
         {
-            *out++ = 0; //*in++;     /* left  - clean */
-            *out++ = 0; //*in++;     /* right - clean */
+            *out++ = *in++;     /* left  - clean */
+           // *out++ = *in;     /* right - clean */
         }
     }
     return paContinue;
@@ -106,8 +106,21 @@ int main(void)
     
     err = Pa_Initialize();
     if( err != paNoError ) goto error;
-    
-    inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
+
+    //const   PaDeviceInfo *deviceInfo;
+    //int numDevices = -1;
+    //numDevices  = Pa_GetDeviceCount();
+    //for(int i=0; i<numDevices; i++ )
+    //{
+    //	deviceInfo = Pa_GetDeviceInfo( i );
+    //}
+
+   // if(numDevices > 1){
+	// Set input to USB
+	inputParameters.device = 1;
+    //} else {
+    //    inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
+    //}
     if (inputParameters.device == paNoDevice) {
         fprintf(stderr,"Error: No default input device.\n");
         goto error;
@@ -117,12 +130,13 @@ int main(void)
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
     
-    outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
+    outputParameters.device = 0;
+    //outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
     if (outputParameters.device == paNoDevice) {
         fprintf(stderr,"Error: No default output device.\n");
         goto error;
     }
-    outputParameters.channelCount = 2;       /* stereo output */
+    outputParameters.channelCount = 1;       /* stereo output */
     outputParameters.sampleFormat = PA_SAMPLE_TYPE;
     outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
     outputParameters.hostApiSpecificStreamInfo = NULL;

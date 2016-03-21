@@ -165,9 +165,9 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     
     //printf("Centroid: %f, \n", centroid);
     
-    #ifdef __arm__n
+    #ifdef __arm__
         // TODO: This needs to be mapped to frequency and 1v / octave
-        softPwmWrite (16,centroid/2);
+       // softPwmWrite (16,centroid/2);
     #endif
 }
 
