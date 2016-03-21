@@ -39,6 +39,9 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     fifo = new float[binSize];
     fifo = initArray(fifo, binSize);
     
+    t_threshTime = time(0);
+    delayTime = 0.01;
+    
     //Move this to a GPIO class
      #ifdef __arm__
         wiringPiSetupGpio();
@@ -46,7 +49,7 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     
         // GPIO Digital Output
         pinMode(16, OUTPUT); //Spectral Feature output
-        softPwmCreate(16,0,1000);
+        softPwmCreate(16,0,100);
     
         pinMode(26, OUTPUT); //Onset Trigger output
     
@@ -188,18 +191,30 @@ void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 }
 
 float SpectralFeatures::getSpectralFlux(){
+    //Update threshold
     float thresh = (float) 5 * (RESOLUTION - readADC(1)) / (float) RESOLUTION ;
     int onset = 0;
-    /* Print if greater than threshold */
-    if(flux > thresh){
+    
+    time_t timeCompare = time(0);
+    double timePassed = difftime(timeCompare, t_threshTime);
+    
+    #ifdef __arm__
+    // Set voltage to low if delayTime has passed
+    if(timePassed >= delayTime){
+        digitalWrite(26, LOW);
+    }
+    #endif
+    
+    delayTime = (float)(RESOLUTION - readADC(0)) / 10.0;
+    /* Print and send voltage if spectral flux is greater than threshold */
+    if(flux > thresh && timePassed >= delayTime){
         onset = 1;
         printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
+        // Update the last read time of threshold
+        t_threshTime = time(0);
         #ifdef __arm__
-            digitalWrite(26, HIGH);
-            int delayTime = (int)(RESOLUTION - readADC(0)) / 10.0;
-           // delay(delayTime);
-            digitalWrite(26, LOW);
+        digitalWrite(26, HIGH);
         #endif
     }
     

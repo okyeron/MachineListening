@@ -9,9 +9,11 @@
 #ifndef SpectralFeatures_hpp
 #define SpectralFeatures_hpp
 
+#include <ctime>
 #include <stdio.h>
 #include <stdlib.h> // pulls in declaration of malloc, free
 #include <math.h>
+
 
 
 #endif /* SpectralFeatures_hpp */
@@ -29,6 +31,9 @@ public:
     float rolloff;
     float centroid;
     float rms;
+    float delayTime; //Delay in MS
+    
+    time_t t_threshTime;
     
     /* Public methods */
     SpectralFeatures (int numSamples, int fs);
