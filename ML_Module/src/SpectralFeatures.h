@@ -39,6 +39,18 @@ public:
     
     Clock::time_point t_threshTime;
     
+    // Feature vars
+    float thresh = 0.7;
+    int onset = 0;
+    Clock::time_point timeCompare;
+    milliseconds ms;
+    
+    float power = 0.0;
+    float *spectrum_sq;
+    float spectrum_sum = 0.0;
+    float spectrum_abs_sum = 0.0;
+    float halfwave = 0.0;
+    
     /* Public methods */
     SpectralFeatures (int numSamples, int fs);
     void extractFeatures(float* spectrum);
@@ -106,17 +118,5 @@ protected:
             fifo[i] = array[i];
         }
     }
-    
-private:
-    float thresh = 0.0;
-    int onset = 0;
-    Clock::time_point timeCompare;
-    milliseconds ms;
-    
-    float power = 0.0;
-    float *spectrum_sq;
-    float spectrum_sum = 0.0;
-    float spectrum_abs_sum = 0.0;
-    float halfwave = 0.0;
 };
 

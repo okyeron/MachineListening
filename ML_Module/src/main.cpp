@@ -118,10 +118,10 @@ int main(void)
     }
 
     if(numDevices > 1){
-	// Set input to USB
-	inputParameters.device = 1;
+        // Set input to USB
+        inputParameters.device = 1;
     } else {
-	inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
+        inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
     }
     if (inputParameters.device == paNoDevice) {
         fprintf(stderr,"Error: No default input device.\n");

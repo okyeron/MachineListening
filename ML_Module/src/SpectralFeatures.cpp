@@ -198,7 +198,9 @@ void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 
 float SpectralFeatures::getSpectralFlux(){
     //Update threshold
-    thresh = (float) 5 * (RESOLUTION - readADC(1)) / (float) RESOLUTION ;
+    #ifdef __arm__
+    thresh = (float) 5 * (RESOLUTION - readADC(1)) / (float) RESOLUTION;
+    #endif
     onset = 0;
 
     timeCompare = Clock::now();
