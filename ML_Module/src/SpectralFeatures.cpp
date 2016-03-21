@@ -42,6 +42,7 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     
     t_threshTime = Clock::now();
     delayTime = 0.01;
+    thresh = 0.7;
     
     power = 0.0;
     spectrum_sq = new float[binSize];
