@@ -194,20 +194,20 @@ float SpectralFeatures::getSpectralFlux(){
     //Update threshold
     float thresh = (float) 5 * (RESOLUTION - readADC(1)) / (float) RESOLUTION ;
     int onset = 0;
-    
+
     time_t timeCompare = time(0);
-    double timePassed = difftime(timeCompare, t_threshTime);
-    
+    float timePassed = timeCompare - t_threshTime;
+    printf("TimePassed: .... %f\n", timePassed);
+
     #ifdef __arm__
     // Set voltage to low if delayTime has passed
     if(timePassed >= delayTime){
+	printf("DelayTime: %f, TimePassed: %f\n",delayTime, timePassed);
         digitalWrite(26, LOW);
     }
     #endif
-    
-    delayTime = (float)(RESOLUTION - readADC(0)) / 10.0;
     /* Print and send voltage if spectral flux is greater than threshold */
-    if(flux > thresh && timePassed >= delayTime){
+    if(flux > thresh && timePassed >= (double) delayTime){
         onset = 1;
         printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
@@ -217,7 +217,9 @@ float SpectralFeatures::getSpectralFlux(){
         digitalWrite(26, HIGH);
         #endif
     }
-    
+
+    delayTime = (float)(RESOLUTION - readADC(0)) /(8196.0);
+
     return flux;
 }
 
