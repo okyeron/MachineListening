@@ -43,6 +43,7 @@ SpectralFeatures *features;
 float *spectrum;
 
 static int gNumNoInputs = 0;
+int numDevices = -1;
 /* This routine will be called by the PortAudio engine when audio is needed.
  ** It may be called at interrupt level on some machines so don't do anything
  ** that could mess up the system like calling malloc() or free().
@@ -90,7 +91,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         for( i=0; i<framesPerBuffer; i++ )
         {
             *out++ = *in++;     /* left  - clean */
-           // *out++ = *in;     /* right - clean */
+            *out++ = *in;     /* right - clean */
         }
     }
     return paContinue;
@@ -107,20 +108,21 @@ int main(void)
     err = Pa_Initialize();
     if( err != paNoError ) goto error;
 
-    //const   PaDeviceInfo *deviceInfo;
-    //int numDevices = -1;
-    //numDevices  = Pa_GetDeviceCount();
-    //for(int i=0; i<numDevices; i++ )
-    //{
-    //	deviceInfo = Pa_GetDeviceInfo( i );
-    //}
+    const   PaDeviceInfo *deviceInfo;
+    numDevices  = Pa_GetDeviceCount();
+    for(int i=0; i<numDevices; i++ )
+    {
+    	deviceInfo = Pa_GetDeviceInfo( i );
+	printf("Device Info: %s, Host API: %d, SampleRate: %f\n",deviceInfo->name, deviceInfo->hostApi,
+ deviceInfo->defaultSampleRate);
+    }
 
-   // if(numDevices > 1){
+    if(numDevices > 1){
 	// Set input to USB
 	inputParameters.device = 1;
-    //} else {
-    //    inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
-    //}
+    } else {
+	inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
+    }
     if (inputParameters.device == paNoDevice) {
         fprintf(stderr,"Error: No default input device.\n");
         goto error;
@@ -130,13 +132,13 @@ int main(void)
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
     
-    outputParameters.device = 0;
-    //outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
+    //outputParameters.device = 1;
+    outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
     if (outputParameters.device == paNoDevice) {
         fprintf(stderr,"Error: No default output device.\n");
         goto error;
     }
-    outputParameters.channelCount = 1;       /* stereo output */
+    outputParameters.channelCount = 2;       /* stereo output */
     outputParameters.sampleFormat = PA_SAMPLE_TYPE;
     outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
     outputParameters.hostApiSpecificStreamInfo = NULL;

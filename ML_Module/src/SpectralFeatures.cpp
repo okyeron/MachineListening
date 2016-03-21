@@ -167,7 +167,7 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     
     #ifdef __arm__
         // TODO: This needs to be mapped to frequency and 1v / octave
-       // softPwmWrite (16,centroid/2);
+        softPwmWrite (16,centroid/2);
     #endif
 }
 
@@ -198,7 +198,7 @@ float SpectralFeatures::getSpectralFlux(){
         #ifdef __arm__
             digitalWrite(26, HIGH);
             int delayTime = (int)(RESOLUTION - readADC(0)) / 10.0;
-            delay(delayTime);
+           // delay(delayTime);
             digitalWrite(26, LOW);
         #endif
     }
