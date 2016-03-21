@@ -43,6 +43,12 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     t_threshTime = Clock::now();
     delayTime = 0.01;
     
+    power = 0.0;
+    spectrum_sq = new float[binSize];
+    spectrum_sum = 0.0;
+    spectrum_abs_sum = 0.0;
+    halfwave = 0.0;
+    
     //Move this to a GPIO class
      #ifdef __arm__
         wiringPiSetupGpio();
@@ -100,11 +106,10 @@ uint16_t readADC(int _channel){ // 12 bit
     Input arguments are the magnitude spectrum and block size */
 void SpectralFeatures::extractFeatures(float* spectrum)
 {
-    float power = 0.0;
-    float spectrum_sq[binSize];
-    float spectrum_sum = 0.0;
-    float spectrum_abs_sum = 0.0;
-    float halfwave = 0.0;
+    power = 0.0;
+    spectrum_sum = 0.0;
+    spectrum_abs_sum = 0.0;
+    halfwave = 0.0;
     
     for (int i=0; i<binSize; i++) {
         // Calculate the difference between the current block and the previous block's spectrum
@@ -171,7 +176,7 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     
     #ifdef __arm__
         // TODO: This needs to be mapped to frequency and 1v / octave
-        softPwmWrite (16,centroid/200.0);
+        softPwmWrite (16,centroid / 4096.0 * 10.0);
     #endif
 }
 
@@ -193,11 +198,11 @@ void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
 
 float SpectralFeatures::getSpectralFlux(){
     //Update threshold
-    float thresh = (float) 5 * (RESOLUTION - readADC(1)) / (float) RESOLUTION ;
-    int onset = 0;
+    thresh = (float) 5 * (RESOLUTION - readADC(1)) / (float) RESOLUTION ;
+    onset = 0;
 
-    Clock::time_point timeCompare = Clock::now();
-    milliseconds ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_threshTime);
+    timeCompare = Clock::now();
+    ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_threshTime);
     
    // printf("TimePassed: .... %lld\n", ms.count());
 
