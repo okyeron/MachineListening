@@ -7,6 +7,7 @@
 //
 
 #include "SpectralFeatures.h"
+
 #ifdef __arm__
     #include <stdio.h>
     #include <stdint.h>
@@ -39,7 +40,7 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     fifo = new float[binSize];
     fifo = initArray(fifo, binSize);
     
-    t_threshTime = time(0);
+    t_threshTime = Clock::now();
     delayTime = 0.01;
     
     //Move this to a GPIO class
@@ -195,30 +196,32 @@ float SpectralFeatures::getSpectralFlux(){
     float thresh = (float) 5 * (RESOLUTION - readADC(1)) / (float) RESOLUTION ;
     int onset = 0;
 
-    time_t timeCompare = time(0);
-    float timePassed = timeCompare - t_threshTime;
-    printf("TimePassed: .... %f\n", timePassed);
+    Clock::time_point timeCompare = Clock::now();
+    milliseconds ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_threshTime);
+    
+    printf("TimePassed: .... %lld\n", ms.count());
 
     #ifdef __arm__
     // Set voltage to low if delayTime has passed
-    if(timePassed >= delayTime){
+    if(ms.count() >= delayTime){
 	printf("DelayTime: %f, TimePassed: %f\n",delayTime, timePassed);
         digitalWrite(26, LOW);
     }
     #endif
     /* Print and send voltage if spectral flux is greater than threshold */
-    if(flux > thresh && timePassed >= (double) delayTime){
+    if(flux > thresh && ms.count() >= delayTime){
         onset = 1;
         printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
         // Update the last read time of threshold
-        t_threshTime = time(0);
+        t_threshTime = Clock::now();
         #ifdef __arm__
         digitalWrite(26, HIGH);
         #endif
     }
 
-    delayTime = (float)(RESOLUTION - readADC(0)) /(8196.0);
+    // Calculate delayTime (in ms) 0 - 4.096 s
+    delayTime = (float)(RESOLUTION - readADC(0));
 
     return flux;
 }

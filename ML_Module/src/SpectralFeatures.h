@@ -9,11 +9,15 @@
 #ifndef SpectralFeatures_hpp
 #define SpectralFeatures_hpp
 
-#include <ctime>
+#include <thread>
+#include <chrono>
 #include <stdio.h>
 #include <stdlib.h> // pulls in declaration of malloc, free
 #include <math.h>
 
+
+typedef std::chrono::high_resolution_clock Clock;
+typedef std::chrono::milliseconds milliseconds;
 
 
 #endif /* SpectralFeatures_hpp */
@@ -33,7 +37,7 @@ public:
     float rms;
     float delayTime; //Delay in MS
     
-    time_t t_threshTime;
+    Clock::time_point t_threshTime;
     
     /* Public methods */
     SpectralFeatures (int numSamples, int fs);
