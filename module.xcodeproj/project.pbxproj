@@ -42,7 +42,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A46B8F8C1C9DB83300EF903F /* module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = module; path = /Users/chrislatina/Documents/Sites/MachineListening/build/Debug/module; sourceTree = "<absolute>"; };
+		A43EAEB21CB738CA0029494F /* module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = module; path = /Users/chrislatina/Documents/Sites/MachineListening/build/Debug/module; sourceTree = "<absolute>"; };
 		A46B8F8D1C9DB83300EF903F /* ML_Module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ML_Module; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4B94CDF1C04F5CB00B49869 /* FFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT.cpp; sourceTree = "<group>"; };
 		A4B94CE01C04F5CB00B49869 /* FFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFT.h; sourceTree = "<group>"; };
@@ -172,7 +172,7 @@
 			);
 			name = module;
 			productName = module;
-			productReference = A46B8F8C1C9DB83300EF903F /* module */;
+			productReference = A43EAEB21CB738CA0029494F /* module */;
 			productType = "com.apple.product-type.tool";
 		};
 		A4B944401C04E08000B49869 /* ML_Module */ = {

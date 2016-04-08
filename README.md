@@ -3,9 +3,9 @@ Eurorack Module for Machine Listening
 
 ## Getting Setup
 Please refer to my Embedded Audio tutorials to setup your Raspberry Pi for development, including connecting headless and setting up internet sharing.
-https://github.com/chrislatina/EmbeddedAudio
+https://github.com/chrislatina/EmbeddedAudio.
 
-These tutorials run on CCRMA's Satellite build. I've setup this environment on a clean Raspian build on the Raspberry Pi Model B+ unit. It is important to update to linux 4.x to allow for i2s mmap configuration for routing audio.
+These tutorials run on CCRMA's Satellite build. I've built out the PCM5012a version of the terminal tedium https://github.com/mxmxmx/terminal_tedium. I've setup this environment on a clean Raspian build on the Raspberry Pi Model B+ unit. It is important to update to linux 4.x to allow for i2s mmap configuration for routing audio.
 
 Run ```sudo rpi-update``` after making sure you have enough memory available on your flash drive. If you are worried about using up all of your memory while updating, clean up with locale purge and deb orphan before running the update. More info can be found here: http://www.intraipsum.se/blog/2012/07/14/raspberry-pi-clean-purge/
 

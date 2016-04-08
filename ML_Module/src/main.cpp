@@ -91,7 +91,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         for( i=0; i<framesPerBuffer; i++ )
         {
             *out++ = *in++;     /* left  - clean */
-            *out++ = *in;     /* right - clean */
+            *out++ = *in;     /* right - clean */ // add ++ to interleave for stereo
         }
     }
     return paContinue;
@@ -118,7 +118,7 @@ int main(void)
     }
 
     if(numDevices > 1){
-        // Set input to USB
+        // Set input to USB -- for testing on OSX, switch to 0
         inputParameters.device = 1;
     } else {
         inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
@@ -127,6 +127,8 @@ int main(void)
         fprintf(stderr,"Error: No default input device.\n");
         goto error;
     }
+    
+    //This may need to be stereo if testing on OSX
     inputParameters.channelCount = 1;       /* mono input */
     inputParameters.sampleFormat = PA_SAMPLE_TYPE;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;

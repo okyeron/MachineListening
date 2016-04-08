@@ -44,13 +44,17 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     delayTime = 0.01;
     thresh = 0.7;
     
+    lp = 0.0;
+    hp = binSize;
+    
     power = 0.0;
     spectrum_sq = new float[binSize];
     spectrum_sum = 0.0;
     spectrum_abs_sum = 0.0;
+    log_spectrum_sum = 0.0;
     halfwave = 0.0;
     
-    //Move this to a GPIO class
+    // ARM specific
      #ifdef __arm__
         wiringPiSetupGpio();
         wiringPiSPISetup(ADC_SPI_CHANNEL, ADC_SPI_SPEED);
@@ -66,14 +70,18 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
         pinMode(24, INPUT); //Switch 2
         pinMode(25, INPUT); //Switch 3
     
-        // Onset time threshold
-    
-        // Spectral feature, hipass thresh
-    
-        // Spectral feature, lowpass thresh
+        // Inter-Onset Time Interval: ADC 0
+        // Onset Threshold          : ADC 1
+        // Spectral lowpass cutoff  : ADC 2
+        // Spectral hipass cutoff   : ADC 3
+        // Spectral Scaling - shift : ADC 4
+        // Spectral scaling - mult  : ADC 5
     
     #endif
 }
+
+
+/* From Terminal Tedium */
 
 uint16_t adc[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //  store prev.
 uint8_t  map_adc[8] = {5, 2, 7, 6, 3, 0, 1, 4}; // map to panel [1 - 2 - 3; 4 - 5 - 6; 7, 8]
@@ -111,6 +119,12 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     spectrum_sum = 0.0;
     spectrum_abs_sum = 0.0;
     halfwave = 0.0;
+    log_spectrum_sum = 0.0;
+    
+    #ifdef __arm__
+    lp = round(binSize * (RESOLUTION - readADC(2)) / (float) RESOLUTION);
+    hp = round(binSize * (RESOLUTION - readADC(2)) / (float) RESOLUTION);
+    #endif
     
     for (int i=0; i<binSize; i++) {
         // Calculate the difference between the current block and the previous block's spectrum
@@ -125,7 +139,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
         //Sum of the magnitude spectrum
         spectrum_sum += spectrum[i];
         spectrum_abs_sum += fabsf(spectrum[i]);
-        
+        log_spectrum_sum += log(spectrum[i]);
         
         spectrum_sq[i] = spectrum[i] * spectrum[i];
     }
@@ -146,6 +160,9 @@ void SpectralFeatures::extractFeatures(float* spectrum)
         
         //Calculate Spectral Centroid
         calculateSpectralCentroid(spectrum, spectrum_sum);
+        
+        //Calculate Spectral Flatness
+        calculateSpectralFlatness(log_spectrum_sum, spectrum_sum);
     }
 }
 
@@ -173,9 +190,10 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
-    //printf("Centroid: %f, \n", centroid);
-    
     #ifdef __arm__
+        //Write the centroid value to the console
+        //printf("Centroid: %f, \n", centroid);
+    
         // TODO: This needs to be mapped to frequency and 1v / octave
         softPwmWrite (16,centroid / 4096.0 * 10.0);
     #endif
@@ -185,16 +203,13 @@ void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_ab
     crest = max_abs_array(spectrum, binSize) / spectrum_abs_sum;
 }
 
-void SpectralFeatures::calculateSpectralFlatness(float* spectrum) {
-//    float min_thresh =1e-20;
-//    
-//    float *xLog = log_array(spectrum, binSize);
-//    xLog = add_array(spectrum,binsize);
-//    
-//    vtf     = exp(mean(XLog,1)) ./ (mean(X,1));
-//    
-//    // avoid NaN for silence frames
-//    vtf (sum(X,1) == 0) = 0;
+void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum) {
+    if((spectrum_sum / binSize) > minThresh)
+        flatness = exp(log_spectrum_sum / (float) binSize) / (spectrum_sum / (float) binSize);
+    else
+        flatness = 0.0;
+    
+    printf("Flatness: %f, \n", flatness);
 }
 
 float SpectralFeatures::getSpectralFlux(){
@@ -212,7 +227,7 @@ float SpectralFeatures::getSpectralFlux(){
     #ifdef __arm__
     // Set voltage to low if delayTime has passed
     if(ms.count() >= delayTime){
-	//printf("DelayTime: %f\n",delayTime);
+        //printf("DelayTime: %f\n",delayTime);
         digitalWrite(26, LOW);
     }
     #endif
@@ -221,6 +236,7 @@ float SpectralFeatures::getSpectralFlux(){
         onset = 1;
         printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         //printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
+        
         // Update the last read time of threshold
         t_threshTime = Clock::now();
         #ifdef __arm__
@@ -228,9 +244,11 @@ float SpectralFeatures::getSpectralFlux(){
         #endif
     }
 
+    #ifdef __arm__
     // Calculate delayTime (in ms) 0 - 4.096 s
     delayTime = (float)(RESOLUTION - readADC(0)) / 100.0;
-
+    #endif
+    
     return flux;
 }
 
@@ -247,7 +265,6 @@ float SpectralFeatures::getSpectralRolloff(){
 }
 
 float SpectralFeatures::getSpectralCentroid(){
-//    printf("Centroid: %f, \n", centroid);
     return centroid;
     
 }
