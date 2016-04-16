@@ -3,35 +3,10 @@
 //  module
 //
 //  Created by Christopher Latina on 11/24/15.
-//  Copyright © 2015 Christopher Latina. All rights reserved.
+//  Copyright © 2016 Christopher Latina. All rights reserved.
 //
 
 #include "SpectralFeatures.h"
-
-#ifdef __arm__
-    #include <stdio.h>
-    #include <stdint.h>
-    #include <stdlib.h>
-    #include <string.h>
-    #include <time.h>
-
-    #include <sys/socket.h>
-    #include <arpa/inet.h>
-    #include <netinet/tcp.h>
-    #include <unistd.h>
-    #include <sys/time.h>
-
-    #include <math.h>
-    #include <wiringPi.h>
-    #include <softPwm.h>
-    #include <wiringPiSPI.h>
-#endif
-
-#define ADC_SPI_CHANNEL 1
-#define ADC_SPI_SPEED 1000000
-#define ADC_NUM_CHANNELS 8
-#define RESOLUTION 4095 // 1023 if using MCP3008; 4095 if using MCP3208
-#define DEADBAND 2
 
 SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     binSize = numBins;
@@ -44,6 +19,8 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     delayTime = 0.01;
     thresh = 0.7;
     
+    fc_communicator = new FeatureCommunication();
+    
     lp = 0.0;
     hp = binSize;
     
@@ -53,62 +30,6 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     spectrum_abs_sum = 0.0;
     log_spectrum_sum = 0.0;
     halfwave = 0.0;
-    
-    // ARM specific
-     #ifdef __arm__
-        wiringPiSetupGpio();
-        wiringPiSPISetup(ADC_SPI_CHANNEL, ADC_SPI_SPEED);
-    
-        // GPIO Digital Output
-        pinMode(16, OUTPUT); //Spectral Feature output
-        softPwmCreate(16,0,100);
-    
-        pinMode(26, OUTPUT); //Onset Trigger output
-    
-        // Switches
-        pinMode(23, INPUT); //Switch 1
-        pinMode(24, INPUT); //Switch 2
-        pinMode(25, INPUT); //Switch 3
-    
-        // Inter-Onset Time Interval: ADC 0
-        // Onset Threshold          : ADC 1
-        // Spectral lowpass cutoff  : ADC 2
-        // Spectral hipass cutoff   : ADC 3
-        // Spectral Scaling - shift : ADC 4
-        // Spectral scaling - mult  : ADC 5
-    
-    #endif
-}
-
-
-/* From Terminal Tedium */
-
-uint16_t adc[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //  store prev.
-uint8_t  map_adc[8] = {5, 2, 7, 6, 3, 0, 1, 4}; // map to panel [1 - 2 - 3; 4 - 5 - 6; 7, 8]
-
-uint8_t SENDMSG;
-
-uint16_t readADC(int _channel){ // 12 bit
-#ifdef __arm__
-    uint8_t spi_data[3];
-    uint8_t input_mode = 1; // single ended = 1, differential = 0
-    uint16_t result, tmp;
-    
-    spi_data[0] = 0x04; // start flag
-    spi_data[0] |= (input_mode<<1); // shift input_mode
-    spi_data[0] |= (_channel>>2) & 0x01; // add msb of channel in our first command byte
-    
-    spi_data[1] = _channel<<6;
-    spi_data[2] = 0x00;
-    
-    wiringPiSPIDataRW(ADC_SPI_CHANNEL, spi_data, 3);
-    result = (spi_data[1] & 0x0f)<<8 | spi_data[2];
-    tmp = adc[_channel]; // prev.
-    if ( (result - tmp) > DEADBAND || (tmp - result) > DEADBAND ) { tmp = result ; SENDMSG = 1; }
-    adc[_channel] = tmp;
-    return tmp;
-#endif
-    return 0;
 }
 
 /*  Method to extract spectral features.
@@ -121,12 +42,14 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     halfwave = 0.0;
     log_spectrum_sum = 0.0;
     
-    #ifdef __arm__
-    lp = round(binSize * (RESOLUTION - readADC(2)) / (float) RESOLUTION);
-    hp = round(binSize * (RESOLUTION - readADC(2)) / (float) RESOLUTION);
-    #endif
+    lp = round(fc_communicator->getADCValue(2));
+    hp = round(fc_communicator->getADCValue(3));
+    //if(isnan(lp) || isnan(hp)){
+        lp = 0;
+        hp = binSize;
+    //}
     
-    for (int i=0; i<binSize; i++) {
+    for (int i=lp; i<hp; i++) {
         // Calculate the difference between the current block and the previous block's spectrum
         float diff = spectrum[i] - fifo[i];
         
@@ -190,13 +113,11 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
-    #ifdef __arm__
-        //Write the centroid value to the console
-        //printf("Centroid: %f, \n", centroid);
-    
-        // TODO: This needs to be mapped to frequency and 1v / octave
-        softPwmWrite (16,centroid / 4096.0 * 10.0);
-    #endif
+    //Write the centroid value to the console
+    //printf("Centroid: %f, \n", centroid);
+
+    // TODO: This needs to be mapped to frequency and 1v / octave
+    fc_communicator->writeGPIO(16,centroid / 4096.0 * 10.0,1);
 }
 
 void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_abs_sum){
@@ -214,40 +135,36 @@ void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float s
 
 float SpectralFeatures::getSpectralFlux(){
     //Update threshold
-    #ifdef __arm__
-    thresh = (float) 5 * (RESOLUTION - readADC(1)) / (float) RESOLUTION;
-    #endif
+    thresh = 5 * fc_communicator->getADCValue(1);
+    //if(isnan(thresh)){
+        thresh = 0.7;
+    //}
+    
+    // Reset onset and clock
     onset = 0;
-
     timeCompare = Clock::now();
     ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_threshTime);
+    // printf("TimePassed: .... %lld\n", ms.count());
     
-   // printf("TimePassed: .... %lld\n", ms.count());
-
-    #ifdef __arm__
     // Set voltage to low if delayTime has passed
     if(ms.count() >= delayTime){
         //printf("DelayTime: %f\n",delayTime);
-        digitalWrite(26, LOW);
+        fc_communicator->writeGPIO(26,0,0);
     }
-    #endif
+    
     /* Print and send voltage if spectral flux is greater than threshold */
     if(flux > thresh && ms.count() >= delayTime){
         onset = 1;
         printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
-        //printf("ADC: %d, %d, %d, %i, %d, %d, %d, %d\n", readADC(0), readADC(1), readADC(2), readADC(3), readADC(4), readADC(5), readADC(6), readADC(7));
         
         // Update the last read time of threshold
         t_threshTime = Clock::now();
-        #ifdef __arm__
-        digitalWrite(26, HIGH);
-        #endif
+        fc_communicator->writeGPIO(26,1,0);
+       
     }
 
-    #ifdef __arm__
     // Calculate delayTime (in ms) 0 - 4.096 s
-    delayTime = (float)(RESOLUTION - readADC(0)) / 100.0;
-    #endif
+    delayTime = (float) fc_communicator->getADCValue(0) * fc_communicator->getResolution() / 100.0;
     
     return flux;
 }

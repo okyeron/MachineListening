@@ -15,6 +15,8 @@
 #include <stdlib.h> // pulls in declaration of malloc, free
 #include <math.h>
 
+#include "FeatureCommunication.hpp"
+
 
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::milliseconds milliseconds;
@@ -25,6 +27,7 @@ typedef std::chrono::milliseconds milliseconds;
 
 class SpectralFeatures {
 public:
+    /* Feature variables */
     int binSize;
     int sampleRate;
     float *fifo;
@@ -34,12 +37,14 @@ public:
     float flatness;
     float rolloff;
     float centroid;
-    float rms;
+    float rms; 
     float delayTime; //Delay in MS
+    
+    FeatureCommunication *fc_communicator;
     
     Clock::time_point t_threshTime;
     
-    // Feature vars
+    
     float thresh;
     int onset;
     Clock::time_point timeCompare;
@@ -52,7 +57,7 @@ public:
     float spectrum_abs_sum;
     float halfwave;
     
-    /* Public methods */
+    /* Public Methods */
     SpectralFeatures (int numSamples, int fs);
     void extractFeatures(float* spectrum);
     
@@ -125,5 +130,7 @@ protected:
             fifo[i] = array[i];
         }
     }
+    
+private:
 };
 

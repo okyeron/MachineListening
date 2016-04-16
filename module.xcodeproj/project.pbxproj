@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A43EAEB51CBC4AE10029494F /* FeatureCommunication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A43EAEB31CBC4AE10029494F /* FeatureCommunication.cpp */; settings = {ASSET_TAGS = (); }; };
 		A4B94CEB1C04F5CB00B49869 /* FFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CDF1C04F5CB00B49869 /* FFT.cpp */; settings = {ASSET_TAGS = (); }; };
 		A4B94CEF1C04F5CB00B49869 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CE71C04F5CB00B49869 /* main.cpp */; settings = {ASSET_TAGS = (); }; };
 		A4B94CF01C04F5CB00B49869 /* SpectralFeatures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B94CE91C04F5CB00B49869 /* SpectralFeatures.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -43,6 +44,8 @@
 
 /* Begin PBXFileReference section */
 		A43EAEB21CB738CA0029494F /* module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = module; path = /Users/chrislatina/Documents/Sites/MachineListening/build/Debug/module; sourceTree = "<absolute>"; };
+		A43EAEB31CBC4AE10029494F /* FeatureCommunication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FeatureCommunication.cpp; sourceTree = "<group>"; };
+		A43EAEB41CBC4AE10029494F /* FeatureCommunication.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FeatureCommunication.hpp; sourceTree = "<group>"; };
 		A46B8F8D1C9DB83300EF903F /* ML_Module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ML_Module; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4B94CDF1C04F5CB00B49869 /* FFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFT.cpp; sourceTree = "<group>"; };
 		A4B94CE01C04F5CB00B49869 /* FFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFT.h; sourceTree = "<group>"; };
@@ -119,6 +122,8 @@
 				A4B94CE71C04F5CB00B49869 /* main.cpp */,
 				A4B94CE91C04F5CB00B49869 /* SpectralFeatures.cpp */,
 				A4B94CEA1C04F5CB00B49869 /* SpectralFeatures.h */,
+				A43EAEB31CBC4AE10029494F /* FeatureCommunication.cpp */,
+				A43EAEB41CBC4AE10029494F /* FeatureCommunication.hpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -242,6 +247,7 @@
 				A4B94D071C04F88600B49869 /* kiss_fft.c in Sources */,
 				A4B94CEF1C04F5CB00B49869 /* main.cpp in Sources */,
 				A4B94CEB1C04F5CB00B49869 /* FFT.cpp in Sources */,
+				A43EAEB51CBC4AE10029494F /* FeatureCommunication.cpp in Sources */,
 				A4B94CF01C04F5CB00B49869 /* SpectralFeatures.cpp in Sources */,
 				A4B94D081C04F88600B49869 /* kiss_fftr.c in Sources */,
 			);

@@ -118,7 +118,7 @@ int main(void)
     }
 
     if(numDevices > 1){
-        // Set input to USB -- for testing on OSX, switch to 0
+        // Set input to USB -- device 1 -- for testing on OSX, switch to 0
         inputParameters.device = 1;
     } else {
         inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
