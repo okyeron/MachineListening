@@ -39,7 +39,7 @@ endif
 
 
 # define the C source files
-SRCS = src/main.cpp src/FFT.cpp src/SpectralFeatures.cpp include/kissfft/kiss_fft.c include/kissfft/kiss_fftr.c
+SRCS = src/main.cpp src/FFT.cpp src/SpectralFeatures.cpp src/FeatureCommunication.cpp include/kissfft/kiss_fft.c include/kissfft/kiss_fftr.c
 
 # define the C object files 
 #
