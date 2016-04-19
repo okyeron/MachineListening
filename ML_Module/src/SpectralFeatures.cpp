@@ -46,8 +46,9 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     halfwave = 0.0;
     log_spectrum_sum = 0.0;
     
-    lp = round(fc_communicator->getADCValue(2));
-    hp = round(fc_communicator->getADCValue(3));
+    // TODO: Make sure lowpass and highpass cannot cancel eachother out, but rather create bandwidth
+    lp = binSize * round(fc_communicator->getADCValue(6));
+    hp = binSize * round(fc_communicator->getADCValue(7));
     if(lp == -1 || hp == -1){
         lp = 0;
         hp = binSize;
@@ -126,10 +127,10 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
     //Write the centroid value to the console
-    printf("Centroid: %f, \n", centroid);
+    //printf("Centroid: %f, \n", centroid);
 
     // TODO: This needs to be mapped to frequency and 1v / octave
-    fc_communicator->writeGPIO(16,roundf(SpectralFeatures::scaleFrequency(centroid) * 10), 1);
+    fc_communicator->writeGPIO(16, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 10), 1);
 }
 
 float SpectralFeatures::scaleFrequency(float feature){
@@ -169,14 +170,14 @@ float SpectralFeatures::getSpectralFlux(){
     ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_threshTime);
     // printf("TimePassed: .... %lld\n", ms.count());
     
-    // Set voltage to low if delayTime has passed
-    if(ms.count() >= delayTime){
-        //printf("DelayTime: %f\n",delayTime);
+    // Set voltage to low if 10ms has passed
+    if(ms.count() >= 10){
         fc_communicator->writeGPIO(26,0,0);
     }
     
     /* Print and send voltage if spectral flux is greater than threshold */
     if(flux > thresh && ms.count() >= delayTime){
+        //printf("DelayTime: %f\n",delayTime);
         onset = 1;
         printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         
@@ -187,7 +188,7 @@ float SpectralFeatures::getSpectralFlux(){
     }
 
     // Calculate delayTime (in ms) 0 - 4.096 s
-    delayTime = (float) fc_communicator->getADCValue(0) * fc_communicator->getResolution() / 100.0;
+    delayTime = (float) fc_communicator->getADCValue(0) * fc_communicator->getResolution() / 10.0;
     
     return flux;
 }
