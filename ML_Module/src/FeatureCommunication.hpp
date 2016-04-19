@@ -33,11 +33,10 @@ public:
     FeatureCommunication ();
     float   getADCValue(int iADC_channel);
     int     getResolution();
-    void    digitalWrite(int iADC_channel);
     void    writeGPIO(int GPIOChannel, int writeValue, int writeType);
     
 protected:
-    uint16_t readADC(int iADC_channel);
+    uint16_t readADC(int _channel);
     
 private:
 

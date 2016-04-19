@@ -57,7 +57,7 @@ uint16_t adc[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //  store prev.
 uint8_t  map_adc[8] = {5, 2, 7, 6, 3, 0, 1, 4}; // map to panel [1 - 2 - 3; 4 - 5 - 6; 7, 8]
 uint8_t SENDMSG;
 
-uint16_t FeatureCommunication::readADC(int iADC_channel){ // 12 bit
+uint16_t FeatureCommunication::readADC(int _channel){ // 12 bit
     #ifdef __arm__
         uint8_t spi_data[3];
         uint8_t input_mode = 1; // single ended = 1, differential = 0
