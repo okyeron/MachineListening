@@ -76,10 +76,10 @@ protected:
     void calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum);
 
 private:
-    float minThresh = 1e-20;
+    float minThresh;
     
-    int lp = 0;
-    int hp = 0;
+    int lp;
+    int hp;
     
     float scaleFrequency(float feature);
     

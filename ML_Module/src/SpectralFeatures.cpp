@@ -24,6 +24,7 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     
     fc_communicator = new FeatureCommunication();
     
+    minThresh = 1e-20;
     lp = 0.0;
     hp = binSize;
     
