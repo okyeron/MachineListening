@@ -88,7 +88,7 @@ float FeatureCommunication::getADCValue(int iADC_channel){
     #ifdef __arm__
         return (float) (RESOLUTION - readADC(iADC_channel)) / (float) RESOLUTION;
     #endif
-    return NULL;
+    return -1;
 }
 
 void FeatureCommunication::writeGPIO(int GPIOChannel, int writeValue, int writeType){

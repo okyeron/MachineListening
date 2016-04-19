@@ -73,14 +73,16 @@ protected:
     void calculateSpectralFlux(float halfwave);
     void calculateSpectralCentroid(float* spectrum, float spectrum_sum);
     void calculateSpectralCrest(float* spectrum, float spectrum_abs_sum);
-    
     void calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum);
-    
+
+private:
     float minThresh = 1e-20;
     
     int lp = 0;
     int hp = 0;
-
+    
+    float scaleFrequency(float feature);
+    
     float* initArray(float* array, int signalSize){
         for (int i=0; i<signalSize; i++)
         {
@@ -131,6 +133,5 @@ protected:
         }
     }
     
-private:
 };
 

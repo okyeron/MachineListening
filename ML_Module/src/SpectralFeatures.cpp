@@ -8,6 +8,9 @@
 
 #include "SpectralFeatures.h"
 
+#define A4_HZ (440.0)
+#define OCTAVE_OFFSET (5)
+
 SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     binSize = numBins;
     sampleRate = fs;
@@ -44,28 +47,36 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     
     lp = round(fc_communicator->getADCValue(2));
     hp = round(fc_communicator->getADCValue(3));
-    //if(isnan(lp) || isnan(hp)){
+    if(lp == -1 || hp == -1){
         lp = 0;
         hp = binSize;
-    //}
+    }
     
     for (int i=lp; i<hp; i++) {
         // Calculate the difference between the current block and the previous block's spectrum
         float diff = spectrum[i] - fifo[i];
         
-        // Half wave recitification.
+        // Half wave recitify the diff.
         halfwave += (diff + fabsf(diff))/2.0;
         
         //Calculate the square
-        power += diff * diff;
+        power += spectrum[i] * spectrum[i];
         
         //Sum of the magnitude spectrum
         spectrum_sum += spectrum[i];
+        
+        //Sum of the absolute value of the magnitude spectrum
         spectrum_abs_sum += fabsf(spectrum[i]);
+        
+        //Logarithmic sum of the magnitude spectrum
         log_spectrum_sum += log(spectrum[i]);
         
+        //Square of the magnitude spectrum
         spectrum_sq[i] = spectrum[i] * spectrum[i];
     }
+    
+    //Calculate RMS
+    rms = sqrtf((1/(float)(hp -lp)) * power);
     
     /* Update fifo */
     setFifo(spectrum,binSize);
@@ -114,10 +125,21 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
     //Write the centroid value to the console
-    //printf("Centroid: %f, \n", centroid);
+    printf("Centroid: %f, \n", centroid);
 
     // TODO: This needs to be mapped to frequency and 1v / octave
-    fc_communicator->writeGPIO(16,centroid / 4096.0 * 10.0,1);
+    fc_communicator->writeGPIO(16,roundf(SpectralFeatures::scaleFrequency(centroid) * 10), 1);
+}
+
+float SpectralFeatures::scaleFrequency(float feature){
+    if(feature > A4_HZ * 32){
+        feature = A4_HZ * 32;
+    }
+    else if(feature < A4_HZ / 32.0){
+        feature = A4_HZ / 32.0;
+    }
+    
+    return log2f(feature/A4_HZ)+OCTAVE_OFFSET;
 }
 
 void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_abs_sum){
@@ -130,15 +152,15 @@ void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float s
     else
         flatness = 0.0;
     
-    printf("Flatness: %f, \n", flatness);
+    //printf("Flatness: %f, \n", flatness);
 }
 
 float SpectralFeatures::getSpectralFlux(){
     //Update threshold
     thresh = 5 * fc_communicator->getADCValue(1);
-    //if(isnan(thresh)){
+    if(thresh <= -1){
         thresh = 0.7;
-    //}
+    }
     
     // Reset onset and clock
     onset = 0;

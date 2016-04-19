@@ -62,7 +62,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     (void) statusFlags;
     (void) userData;
     float flux;
-    float centroid;
+    float centroid = 0.0;
     
     /* Initialize features to zero */
     
@@ -91,7 +91,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         for( i=0; i<framesPerBuffer; i++ )
         {
             *out++ = *in++;     /* left  - clean */
-            *out++ = *in;     /* right - clean */ // add ++ to interleave for stereo
+            *out++ = centroid / 100.0f; // *in;     /* right - clean */ // add ++ to interleave for stereo
         }
     }
     return paContinue;
