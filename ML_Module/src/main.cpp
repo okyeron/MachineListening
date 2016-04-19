@@ -91,7 +91,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         for( i=0; i<framesPerBuffer; i++ )
         {
             *out++ = 0.6 * *in++;     /* left  - clean */
-            *out++ = centroid / 100.0f; // *in;     /* right - clean */ // add ++ to interleave for stereo
+            *out++ = 0.6 * *in;     /* right - clean */ // add ++ to interleave for stereo
         }
     }
     return paContinue;

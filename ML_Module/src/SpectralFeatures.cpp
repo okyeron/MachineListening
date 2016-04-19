@@ -127,10 +127,10 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
     //Write the centroid value to the console
-    //printf("Centroid: %f, \n", centroid);
+    //printf("Centroid: %i, \n", (int) floor(SpectralFeatures::scaleFrequency(centroid) * 10));
 
     // TODO: This needs to be mapped to frequency and 1v / octave
-    fc_communicator->writeGPIO(16, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 10), 1);
+    fc_communicator->writeGPIO(16, (int) floor(SpectralFeatures::scaleFrequency(centroid) * 10), 1);
 }
 
 float SpectralFeatures::scaleFrequency(float feature){
