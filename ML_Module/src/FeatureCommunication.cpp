@@ -44,7 +44,8 @@ FeatureCommunication::FeatureCommunication(){
         softPwmCreate(16,0,100);
         
         pinMode(26, OUTPUT); //Onset Trigger output
-        
+        softPwmCreate(26,0,100);
+    
         // Switches
         pinMode(23, INPUT); //Switch 1
         pinMode(24, INPUT); //Switch 2
@@ -98,7 +99,7 @@ int FeatureCommunication::readDigital(int iPinNumber){
     return -1;
 }
 
-void FeatureCommunication::writeGPIO(int GPIOChannel, int writeValue, int writeType){
+void FeatureCommunication::writeGPIO(int GPIOChannel, float writeValue, int writeType){
     #ifdef __arm__
         if(writeType == 1){
             softPwmWrite (GPIOChannel, writeValue);

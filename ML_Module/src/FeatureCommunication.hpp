@@ -34,7 +34,7 @@ public:
     float   getADCValue(int iADC_channel);
     int     getResolution();
     int     readDigital(int iPinNumber);
-    void    writeGPIO(int GPIOChannel, int writeValue, int writeType);
+    void    writeGPIO(int GPIOChannel, float writeValue, int writeType);
     
 protected:
     uint16_t readADC(int _channel);
