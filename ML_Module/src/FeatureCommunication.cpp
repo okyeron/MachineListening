@@ -34,6 +34,7 @@
 #define DEADBAND 2
 
 FeatureCommunication::FeatureCommunication(){
+    iFeatureSwitch = 0;
     // ARM specific
     #ifdef __arm__
         wiringPiSetupGpio();
@@ -44,7 +45,7 @@ FeatureCommunication::FeatureCommunication(){
         softPwmCreate(16,0,100);
         
         pinMode(26, OUTPUT); //Onset Trigger output
-        softPwmCreate(26,0,100);
+        softPwmCreate(26,0,1024);
     
         // Switches
         pinMode(23, INPUT); //Switch 1

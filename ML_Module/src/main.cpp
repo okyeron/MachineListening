@@ -13,6 +13,7 @@
 #include "portaudio.h"
 #include "FFT.h"
 #include "SpectralFeatures.h"
+#include "Synthesis.h"
 
 #ifdef __arm__
     #include <wiringPi.h>
@@ -83,6 +84,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             features->extractFeatures(spectrum);
             flux = features->getSpectralFlux();
             centroid = features->getSpectralCentroid();
+            //generateSine (float *pfOutBuf, float fFreqInHz, float fSampleFreqInHz, int iLength, float fAmplitude = 1.F, float fStartPhaseInRad = 0.F)
         }
         else{
             gNumNoInputs += 1;

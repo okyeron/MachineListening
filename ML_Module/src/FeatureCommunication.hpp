@@ -36,6 +36,8 @@ public:
     int     readDigital(int iPinNumber);
     void    writeGPIO(int GPIOChannel, float writeValue, int writeType);
     
+    int iFeatureSwitch;
+    
 protected:
     uint16_t readADC(int _channel);
     
