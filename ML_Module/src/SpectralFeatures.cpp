@@ -128,11 +128,11 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
     //Write the centroid value to the console
-    //printf("Centroid: %i, \n", (int) floor(SpectralFeatures::scaleFrequency(centroid) * 10));
+    printf("Centroid: %i, \n", (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4));
 
     // TODO: This needs to be mapped to frequency and 1v / octave
-    if(!fc_communicator->readDigital(25))
-        fc_communicator->writeGPIO(16, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 409.6), 1);
+    //if(!fc_communicator->readDigital(25))
+        fc_communicator->writeGPIO(16, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4), 1);
 }
 
 float SpectralFeatures::scaleFrequency(float feature){
@@ -174,7 +174,7 @@ float SpectralFeatures::getSpectralFlux(){
     
     // Set voltage to low if 10ms has passed
     if(ms.count() >= 10){
-        if(fc_communicator->readDigital(25))
+        //if(fc_communicator->readDigital(25))
             fc_communicator->writeGPIO(26,0,1);
     }
     
@@ -186,8 +186,8 @@ float SpectralFeatures::getSpectralFlux(){
         
         // Update the last read time of threshold
         t_threshTime = Clock::now();
-        if(fc_communicator->readDigital(25))
-            fc_communicator->writeGPIO(26,4096,1);
+        //if(fc_communicator->readDigital(25))
+            fc_communicator->writeGPIO(16,1024,1);
        
     }
 
