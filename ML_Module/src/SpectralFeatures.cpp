@@ -55,6 +55,8 @@ void SpectralFeatures::extractFeatures(float* spectrum)
         hp = binSize;
     }
     
+    printf("LP: %i, HP: %i\n", lp, hp);
+    
     for (int i=lp; i<hp; i++) {
         // Calculate the difference between the current block and the previous block's spectrum
         float diff = spectrum[i] - fifo[i];
@@ -165,6 +167,9 @@ float SpectralFeatures::getSpectralFlux(){
     if(thresh <= -1){
         thresh = 0.7;
     }
+    
+    
+    printf("Thresh: %f \n", thresh);
     
     // Reset onset and clock
     onset = 0;
