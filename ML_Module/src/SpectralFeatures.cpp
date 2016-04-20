@@ -48,11 +48,16 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     log_spectrum_sum = 0.0;
     
     // Find lowpass and hp values
-    lp = (int) roundf(binSize * (fc_communicator->getADCValue(6)));
-    hp = (int) roundf(binSize * (fc_communicator->getADCValue(7)));
-    if(lp == -1 || hp == -1){
+    lp = (int) roundf(binSize * (fc_communicator->getADCValue(6))) - 33;
+    hp = (int) roundf(binSize * (fc_communicator->getADCValue(7))) + 16;
+    if(lp < 0){
         lp = 0;
-        hp = binSize;
+    }
+    if(hp < 0){
+        hp = 0;
+    }
+    if(hp > 512){
+        hp = 512;
     }
     
     printf("LP: %i, HP: %i\n", lp, hp);
