@@ -7,6 +7,7 @@
 //
 
 #include "SpectralFeatures.h"
+#include "Synthesis.h"
 
 #define A4_HZ (440.0)
 #define OCTAVE_OFFSET (5)
@@ -130,8 +131,8 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     //printf("Centroid: %i, \n", (int) floor(SpectralFeatures::scaleFrequency(centroid) * 10));
 
     // TODO: This needs to be mapped to frequency and 1v / octave
-    if(!fc_communicator->readDigital(23))
-        fc_communicator->writeGPIO(16, SpectralFeatures::scaleFrequency(centroid) * 10, 1);
+    if(!fc_communicator->readDigital(25))
+        fc_communicator->writeGPIO(16, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 409.6), 1);
 }
 
 float SpectralFeatures::scaleFrequency(float feature){
@@ -173,8 +174,8 @@ float SpectralFeatures::getSpectralFlux(){
     
     // Set voltage to low if 10ms has passed
     if(ms.count() >= 10){
-        if(fc_communicator->readDigital(23))
-            fc_communicator->writeGPIO(26,0,0);
+        if(fc_communicator->readDigital(25))
+            fc_communicator->writeGPIO(26,0,1);
     }
     
     /* Print and send voltage if spectral flux is greater than threshold */
@@ -185,8 +186,8 @@ float SpectralFeatures::getSpectralFlux(){
         
         // Update the last read time of threshold
         t_threshTime = Clock::now();
-        if(fc_communicator->readDigital(23))
-            fc_communicator->writeGPIO(26,1,0);
+        if(fc_communicator->readDigital(25))
+            fc_communicator->writeGPIO(26,4096,1);
        
     }
 
