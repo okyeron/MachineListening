@@ -33,6 +33,7 @@ public:
     FeatureCommunication ();
     float   getADCValue(int iADC_channel);
     int     getResolution();
+    int     readDigital(int iPinNumber);
     void    writeGPIO(int GPIOChannel, int writeValue, int writeType);
     
 protected:

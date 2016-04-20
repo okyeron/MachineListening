@@ -91,6 +91,13 @@ float FeatureCommunication::getADCValue(int iADC_channel){
     return -1;
 }
 
+int FeatureCommunication::readDigital(int iPinNumber){
+    #ifdef __arm__
+        return digitalRead(iPinNumber);
+    #endif
+    return -1;
+}
+
 void FeatureCommunication::writeGPIO(int GPIOChannel, int writeValue, int writeType){
     #ifdef __arm__
         if(writeType == 1){
