@@ -49,6 +49,7 @@
 		A43D00D11CC7CA3C009B4DB8 /* Lfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lfo.h; sourceTree = "<group>"; };
 		A43D00D31CC7CA3C009B4DB8 /* Synthesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Synthesis.h; sourceTree = "<group>"; };
 		A43D00D41CC7CA3C009B4DB8 /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
+		A43D00D51CC7EE91009B4DB8 /* RingBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RingBuffer.h; sourceTree = "<group>"; };
 		A43EAEB31CBC4AE10029494F /* FeatureCommunication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FeatureCommunication.cpp; sourceTree = "<group>"; };
 		A43EAEB41CBC4AE10029494F /* FeatureCommunication.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FeatureCommunication.hpp; sourceTree = "<group>"; };
 		A46B8F8D1C9DB83300EF903F /* ML_Module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ML_Module; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -126,6 +127,7 @@
 				A43D00D01CC7CA3C009B4DB8 /* ErrorDef.h */,
 				A43D00D11CC7CA3C009B4DB8 /* Lfo.h */,
 				A43D00D31CC7CA3C009B4DB8 /* Synthesis.h */,
+				A43D00D51CC7EE91009B4DB8 /* RingBuffer.h */,
 				A43D00D41CC7CA3C009B4DB8 /* Util.h */,
 				A4B94CDF1C04F5CB00B49869 /* FFT.cpp */,
 				A4B94CE01C04F5CB00B49869 /* FFT.h */,

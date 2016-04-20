@@ -13,7 +13,7 @@
 #include "portaudio.h"
 #include "FFT.h"
 #include "SpectralFeatures.h"
-#include "Synthesis.h"
+#include "Lfo.h"
 
 #ifdef __arm__
     #include <wiringPi.h>
@@ -42,6 +42,7 @@ typedef float SAMPLE;
 FFT *fft;
 SpectralFeatures *features;
 float *spectrum;
+CLfo *synthesizer;
 
 static int gNumNoInputs = 0;
 int numDevices = -1;
@@ -84,7 +85,9 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             features->extractFeatures(spectrum);
             flux = features->getSpectralFlux();
             centroid = features->getSpectralCentroid();
-            //generateSine (float *pfOutBuf, float fFreqInHz, float fSampleFreqInHz, int iLength, float fAmplitude = 1.F, float fStartPhaseInRad = 0.F)
+            synthesizer->setLfoType(CLfo::LfoType_t::kSine);
+            synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
+            synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
         }
         else{
             gNumNoInputs += 1;
@@ -93,7 +96,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         for( i=0; i<framesPerBuffer; i++ )
         {
             *out++ = 0.6 * *in++;     /* left  - clean */
-            *out++ = 0.6 * *in;     /* right - clean */ // add ++ to interleave for stereo
+            *out++ = 0.6 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
         }
     }
     return paContinue;
@@ -150,6 +153,7 @@ int main(void)
     /* Instantiate FFT */
     fft = new FFT(FRAMES_PER_BUFFER);
     spectrum = new float[FRAMES_PER_BUFFER/2];
+    synthesizer = new CLfo(SAMPLE_RATE);
     
     /* Instantiate Spectral Features */
     features = new SpectralFeatures(FRAMES_PER_BUFFER/2, SAMPLE_RATE);
