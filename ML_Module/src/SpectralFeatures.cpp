@@ -48,8 +48,8 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     log_spectrum_sum = 0.0;
     
     // Find lowpass and hp values
-    lp = binSize * round(fc_communicator->getADCValue(6));
-    hp = binSize * round(fc_communicator->getADCValue(7));
+    lp = (int) binSize * round(fc_communicator->getADCValue(6));
+    hp = (int) binSize * round(fc_communicator->getADCValue(7));
     if(lp == -1 || hp == -1){
         lp = 0;
         hp = binSize;
@@ -128,11 +128,11 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
     //Write the centroid value to the console
-    printf("Centroid: %i, \n", (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4));
+    //printf("Centroid: %i, \n", (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4));
 
     // TODO: This needs to be mapped to frequency and 1v / octave
-    if(fc_communicator->readDigital(25))
-        fc_communicator->writeGPIO(26, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4), 1);
+    //if(fc_communicator->readDigital(25))
+        fc_communicator->writeGPIO(15, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4), 1);
 }
 
 float SpectralFeatures::scaleFrequency(float feature){
@@ -174,8 +174,7 @@ float SpectralFeatures::getSpectralFlux(){
     
     // Set voltage to low if 10ms has passed
     if(ms.count() >= 10){
-        if(!fc_communicator->readDigital(25))
-            fc_communicator->writeGPIO(26,0,1);
+        fc_communicator->writeGPIO(26,0,1);
     }
     
     /* Print and send voltage if spectral flux is greater than threshold */
@@ -186,9 +185,7 @@ float SpectralFeatures::getSpectralFlux(){
         
         // Update the last read time of threshold
         t_threshTime = Clock::now();
-        if(!fc_communicator->readDigital(25))
-            fc_communicator->writeGPIO(26,1,0);
-       
+        fc_communicator->writeGPIO(26,1,0);
     }
 
     // Calculate delayTime (in ms) 0 - 4.096 s
