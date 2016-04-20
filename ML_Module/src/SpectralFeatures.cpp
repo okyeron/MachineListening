@@ -174,7 +174,7 @@ float SpectralFeatures::getSpectralFlux(){
     
     // Set voltage to low if 10ms has passed
     if(ms.count() >= 10){
-        fc_communicator->writeGPIO(26,0,1);
+        fc_communicator->writeGPIO(26,0,0);
     }
     
     /* Print and send voltage if spectral flux is greater than threshold */
