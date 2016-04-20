@@ -132,7 +132,7 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
 
     // TODO: This needs to be mapped to frequency and 1v / octave
     //if(fc_communicator->readDigital(25))
-        fc_communicator->writeGPIO(15, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4), 1);
+    fc_communicator->writeGPIO(16, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4), 1);
 }
 
 float SpectralFeatures::scaleFrequency(float feature){
