@@ -48,8 +48,8 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     log_spectrum_sum = 0.0;
     
     // Find lowpass and hp values
-    lp = (int) roundf(binSize * (fc_communicator->getADCValue(6))) - 33;
-    hp = (int) roundf(binSize * (fc_communicator->getADCValue(7))) + 16;
+    lp = (int) roundf(binSize * (fc_communicator->getADCValue(6)) - 33 * (512 / 462.0)); // Manual scaling for voltage offset
+    hp = (int) roundf(binSize * (fc_communicator->getADCValue(7)) -33 * (512 / 462.0)); // Manual scaling for voltage offset
     if(lp < 0){
         lp = 0;
     }
