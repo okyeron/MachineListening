@@ -48,8 +48,8 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     log_spectrum_sum = 0.0;
     
     // Find lowpass and hp values
-    lp = (int) binSize * round(fc_communicator->getADCValue(6));
-    hp = (int) binSize * round(fc_communicator->getADCValue(7));
+    lp = (int) roundf(binSize * (fc_communicator->getADCValue(6)));
+    hp = (int) roundf(binSize * (fc_communicator->getADCValue(7)));
     if(lp == -1 || hp == -1){
         lp = 0;
         hp = binSize;
@@ -168,8 +168,7 @@ float SpectralFeatures::getSpectralFlux(){
         thresh = 0.7;
     }
     
-    
-    printf("Thresh: %f \n", thresh);
+    //printf("Thresh: %f \n", thresh);
     
     // Reset onset and clock
     onset = 0;
