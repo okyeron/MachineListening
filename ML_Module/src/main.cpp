@@ -14,6 +14,7 @@
 #include "FFT.h"
 #include "SpectralFeatures.h"
 #include "Lfo.h"
+#include "FeatureCommunication.hpp"
 
 #ifdef __arm__
     #include <wiringPi.h>
@@ -37,12 +38,22 @@ using namespace std;
 #define SAMPLE_RATE         (44100)
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   (1024)
+#define NULL_INT            (-2147483648)
 
 typedef float SAMPLE;
 FFT *fft;
 SpectralFeatures *features;
 float *spectrum;
 CLfo *synthesizer;
+FeatureCommunication *communicator;
+
+//Feature variables
+int onset;
+float centroid = 0.0;
+int minBin;
+int maxBin;
+float onsetThreshold;
+float interOnsetInterval;
 
 static int gNumNoInputs = 0;
 int numDevices = -1;
@@ -63,8 +74,6 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     (void) timeInfo; /* Prevent unused variable warnings. */
     (void) statusFlags;
     (void) userData;
-    float flux;
-    float centroid = 0.0;
     
     /* Initialize features to zero */
     
@@ -82,14 +91,80 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         spectrum = fft->getSpectrum(in);
         if(!isnan(*spectrum) && *spectrum != INFINITY)
         {
+            /*** Get Parameters From Hardware ***/
+            
+            // Get minBin and maxBin values
+            minBin = communicator->getADCValue(6);
+            maxBin = communicator->getADCValue(7);
+            
+            if(minBin != NULL_INT){
+                minBin = (int) roundf((features->getBinSize() * (minBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
+            } else {
+               minBin = 0;
+            }
+            
+            if(maxBin != NULL_INT){
+                maxBin = (int) roundf((features->getBinSize() * (maxBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
+            } else {
+                maxBin = features->getBinSize();
+            }
+            
+            printf("minbin: %i, maxbin: %i \n", minBin, maxBin);
+            
+            
+            //Update threshold
+            onsetThreshold = communicator->getADCValue(1);
+            if(onsetThreshold == NULL_INT){
+                onsetThreshold = 0.7;
+            } else {
+                onsetThreshold = 5 * onsetThreshold;
+            }
+            
+            // Update inter-onset interval (in ms) 0 - 4.096 s
+            interOnsetInterval = communicator->getADCValue(0);
+            if(interOnsetInterval == NULL_INT){
+                interOnsetInterval = 0.01;
+            } else {
+                interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
+            }
+            
+            // Set voltage to low if 10ms has passed
+            if(features->getTimePassedSinceLastOnsetInMs() >= 10){
+                communicator->writeGPIO(26,0,0);
+            }
+            
+            // Set the filter params
+            features->setFilterParams(minBin, maxBin);
+            
+            /*** Extract Features ***/
+            
+            // Extract Spectral features for the block
             features->extractFeatures(spectrum);
-            flux = features->getSpectralFlux();
+            
+            printf("Thresh: %f \n", onsetThreshold);
+            // Get the onset
+            onset = features->getOnset(onsetThreshold, interOnsetInterval);
+            if(onset){
+                communicator->writeGPIO(26,1,0);
+            }
+            
+            // Map Spectral Centroid and Rolloff to a sine wave
             centroid = features->getSpectralCentroid();
             synthesizer->setLfoType(CLfo::LfoType_t::kSine);
             synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
             synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
-        }
-        else{
+            
+            // Mapped to frequency and 1v / octave
+            
+            //if(fc_communicator->readDigital(25))
+            communicator->writeGPIO(16, (int) roundf(features->scaleFrequency(centroid) * 102.4), 1);
+            
+            // Map Spectral Flatness to White noise
+            
+            
+            // Map RMS to DC voltage
+            
+        } else{
             gNumNoInputs += 1;
         }
         
@@ -151,12 +226,16 @@ int main(void)
     outputParameters.hostApiSpecificStreamInfo = NULL;
     
     /* Instantiate FFT */
-    fft = new FFT(FRAMES_PER_BUFFER);
+    fft = new FFT();
+    fft->init(FRAMES_PER_BUFFER);
     spectrum = new float[FRAMES_PER_BUFFER/2];
-    synthesizer = new CLfo(SAMPLE_RATE);
     
     /* Instantiate Spectral Features */
-    features = new SpectralFeatures(FRAMES_PER_BUFFER/2, SAMPLE_RATE);
+    features = new SpectralFeatures();
+    features->init(FRAMES_PER_BUFFER/2, SAMPLE_RATE);
+    synthesizer = new CLfo(SAMPLE_RATE);
+    
+    communicator = new FeatureCommunication();
     
     err = Pa_OpenStream(
                         &stream,

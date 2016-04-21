@@ -31,6 +31,7 @@ public:
     
     /* Public Methods */
     FeatureCommunication ();
+    virtual ~FeatureCommunication();
     float   getADCValue(int iADC_channel);
     int     getResolution();
     int     readDigital(int iPinNumber);

@@ -10,8 +10,11 @@
 using namespace std;
 
 
-FFT::FFT(int numSamples)
-{
+FFT::FFT(){
+    //Empty use init
+}
+
+void FFT::init(int numSamples){
     signalSize = numSamples;
     
     //Allocate kiss_fft params
@@ -54,14 +57,14 @@ float* FFT::getSpectrum (const SAMPLE* in)
 }
 
 //// Define the destructor.
-//FFT::~FFT() {
-//    // Deallocate the memory
-//    kiss_fftr_free(f_fft);
-//    delete [] window;
-//    delete [] mag_out;
-//    delete [] tx_in;
-//    delete [] cx_out;
-//    delete [] cx_in;
-//    kiss_fft_cleanup();
-//}
+FFT::~FFT() {
+    // Deallocate the memory
+    kiss_fftr_free(f_fft);
+    delete [] window;
+    delete [] mag_out;
+    delete [] tx_in;
+    delete [] cx_out;
+    delete [] cx_in;
+    kiss_fft_cleanup();
+}
 

@@ -23,9 +23,6 @@ typedef float SAMPLE;
 
 class FFT {
 public:
-    /* Public methods */
-    FFT(int numSamples);
-//    ~FFT();
     float* getSpectrum (const SAMPLE* in);
     
     int signalSize;
@@ -37,4 +34,14 @@ public:
     
     float *mag_out;
     float *window;
+    
+    /* Public methods */
+    FFT();
+    virtual ~FFT();
+    void init(int numSamples);
+    
+protected:
+    
+private:
+    
 };

@@ -15,9 +15,6 @@
 #include <stdlib.h> // pulls in declaration of malloc, free
 #include <math.h>
 
-#include "FeatureCommunication.hpp"
-
-
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::milliseconds milliseconds;
 
@@ -40,8 +37,6 @@ public:
     float rms; 
     float delayTime; //Delay in MS
     
-    FeatureCommunication *fc_communicator;
-    
     Clock::time_point t_threshTime;
     
     
@@ -58,18 +53,25 @@ public:
     float halfwave;
     
     /* Public Methods */
-    SpectralFeatures (int numSamples, int fs);
+    SpectralFeatures ();
+    virtual ~SpectralFeatures();
+    void init (int numBins, int fs);
     void extractFeatures(float* spectrum);
     
     /* Public methods to get features */
-    float getSpectralFlux();
+    float getTimePassedSinceLastOnsetInMs();
+    float getOnset(float threshold, float interOnsetinterval);
     float getSpectralCrest();
     float getSpectralFlatness();
     float getSpectralRolloff();
     float getSpectralCentroid();
     float getRMS();
+    int getBinSize();
+    float scaleFrequency(float feature);
+    void setFilterParams(int minBin, int maxBin);
     
 protected:
+    void reset();
     void calculateSpectralFlux(float halfwave);
     void calculateSpectralCentroid(float* spectrum, float spectrum_sum);
     void calculateSpectralCrest(float* spectrum, float spectrum_abs_sum);
@@ -78,10 +80,8 @@ protected:
 private:
     float minThresh;
     
-    int lp;
-    int hp;
-    
-    float scaleFrequency(float feature);
+    int minBin;
+    int maxBin;
     
     float* initArray(float* array, int signalSize){
         for (int i=0; i<signalSize; i++)

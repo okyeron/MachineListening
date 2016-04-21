@@ -12,7 +12,18 @@
 #define A4_HZ (440.0)
 #define OCTAVE_OFFSET (5)
 
-SpectralFeatures::SpectralFeatures (int numBins, int fs) {
+/* Constructor */
+SpectralFeatures::SpectralFeatures () {
+    // Empty, use init
+}
+
+/* Destructor */
+SpectralFeatures::~SpectralFeatures(){
+    reset();
+}
+
+/* Iniit function */
+void SpectralFeatures::init (int numBins, int fs) {
     binSize = numBins;
     sampleRate = fs;
     prevFlux = 0.0;
@@ -23,11 +34,9 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     delayTime = 0.01;
     thresh = 0.7;
     
-    fc_communicator = new FeatureCommunication();
-    
     minThresh = 1e-20;
-    lp = 0.0;
-    hp = binSize;
+    minBin = 0;
+    maxBin = binSize;
     
     power = 0.0;
     spectrum_sq = new float[binSize];
@@ -35,6 +44,41 @@ SpectralFeatures::SpectralFeatures (int numBins, int fs) {
     spectrum_abs_sum = 0.0;
     log_spectrum_sum = 0.0;
     halfwave = 0.0;
+}
+
+/* Reset function */
+void SpectralFeatures::reset(){
+    delete [] fifo;
+    delete [] spectrum_sq;
+    
+}
+
+void SpectralFeatures::setFilterParams(int minBin, int maxBin){
+    this->minBin = minBin;
+    this->maxBin = maxBin;
+    
+    if(minBin < 0){
+        minBin = 0;
+    }
+    if(maxBin > binSize ){
+        maxBin = binSize;
+    }
+    if(maxBin < 0){
+        maxBin = 0;
+    }
+    if(minBin >= maxBin){
+        minBin = maxBin -1;
+        if(minBin == -1){
+            minBin = 0;
+            maxBin = 1;
+        }
+    }
+    
+    //printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
+}
+
+int SpectralFeatures::getBinSize(){
+    return binSize;
 }
 
 /*  Method to extract spectral features.
@@ -47,25 +91,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     halfwave = 0.0;
     log_spectrum_sum = 0.0;
     
-    
-    // Find lowpass and hp values
-    lp = (int) roundf((binSize * (fc_communicator->getADCValue(6)) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
-    hp = (int) roundf((binSize * (fc_communicator->getADCValue(7)) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
-    
-    if(lp < 0){
-        lp = 0;
-    }
-    if(hp > 512 || hp == -604){
-        hp = 512;
-    }
-    if(hp < 0){
-        hp = 0;
-    }
-
-    
-    printf("LP: %i, HP: %i\n", lp, hp);
-    
-    for (int i=lp; i<hp; i++) {
+    for (int i=minBin; i<maxBin; i++) {
         // Calculate the difference between the current block and the previous block's spectrum
         float diff = spectrum[i] - fifo[i];
         
@@ -89,7 +115,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     }
     
     //Calculate RMS
-    rms = sqrtf((1/(float)(hp -lp)) * power);
+    rms = sqrtf((1/(float)(maxBin-minBin)) * power);
     
     /* Update fifo */
     setFifo(spectrum,binSize);
@@ -136,21 +162,14 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
-    
-    //Write the centroid value to the console
-    //printf("Centroid: %i, \n", (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4));
-
-    // TODO: This needs to be mapped to frequency and 1v / octave
-    //if(fc_communicator->readDigital(25))
-    fc_communicator->writeGPIO(16, (int) roundf(SpectralFeatures::scaleFrequency(centroid) * 102.4), 1);
 }
 
 float SpectralFeatures::scaleFrequency(float feature){
-    if(feature > A4_HZ * 32){
-        feature = A4_HZ * 32;
+    if(feature > A4_HZ * pow(2,OCTAVE_OFFSET)){
+        feature = A4_HZ * pow(2,OCTAVE_OFFSET);
     }
-    else if(feature < A4_HZ / 32.0){
-        feature = A4_HZ / 32.0;
+    else if(feature < A4_HZ / (float) pow(2,OCTAVE_OFFSET)){
+        feature = A4_HZ / (float) pow(2,OCTAVE_OFFSET);
     }
     
     return log2f(feature/A4_HZ)+OCTAVE_OFFSET;
@@ -165,45 +184,31 @@ void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float s
         flatness = exp(log_spectrum_sum / (float) binSize) / (spectrum_sum / (float) binSize);
     else
         flatness = 0.0;
-    
-    //printf("Flatness: %f, \n", flatness);
 }
 
-float SpectralFeatures::getSpectralFlux(){
-    //Update threshold
-    thresh = 5 * fc_communicator->getADCValue(1);
-    if(thresh <= -1){
-        thresh = 0.7;
-    }
-    
-    //printf("Thresh: %f \n", thresh);
-    
+float SpectralFeatures::getTimePassedSinceLastOnsetInMs(){
+    return ms.count();
+}
+
+float SpectralFeatures::getOnset(float threshold, float interOnsetinterval){
+
     // Reset onset and clock
     onset = 0;
     timeCompare = Clock::now();
     ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_threshTime);
     // printf("TimePassed: .... %lld\n", ms.count());
     
-    // Set voltage to low if 10ms has passed
-    if(ms.count() >= 10){
-        fc_communicator->writeGPIO(26,0,0);
-    }
-    
     /* Print and send voltage if spectral flux is greater than threshold */
-    if(flux > thresh && ms.count() >= delayTime){
+    if(flux > thresh && ms.count() >= interOnsetinterval){
         //printf("DelayTime: %f\n",delayTime);
         onset = 1;
         printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         
         // Update the last read time of threshold
         t_threshTime = Clock::now();
-        fc_communicator->writeGPIO(26,1,0);
     }
-
-    // Calculate delayTime (in ms) 0 - 4.096 s
-    delayTime = (float) fc_communicator->getADCValue(0) * fc_communicator->getResolution() / 10.0;
     
-    return flux;
+    return onset;
 }
 
 float SpectralFeatures::getSpectralCrest(){
@@ -220,7 +225,6 @@ float SpectralFeatures::getSpectralRolloff(){
 
 float SpectralFeatures::getSpectralCentroid(){
     return centroid;
-    
 }
 
 float SpectralFeatures::getRMS(){
