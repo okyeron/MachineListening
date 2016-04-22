@@ -111,7 +111,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             } else {
                 maxBin = features->getBinSize();
             }
-            //printf("minbin: %i, maxbin: %i \n", minBin, maxBin);
+            printf("minbin: %i, maxbin: %i \n", minBin, maxBin);
             
             
             //Update threshold
@@ -122,6 +122,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 onsetThreshold = 5 * onsetThreshold;
             }
             
+            printf("Onset Thresh: %f \n\n", onsetThreshold);
+            
             // Update inter-onset interval (in ms) 0 - 4.096 s
             interOnsetInterval = communicator->getADCValue(0);
             if(interOnsetInterval == NULL_INT){
@@ -129,6 +131,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             } else {
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
             }
+            printf("Interonset: %f \n\n", interOnsetInterval);
             
             // Set voltage to low if 10ms has passed
             if(features->getTimePassedSinceLastOnsetInMs() >= 10){
@@ -158,6 +161,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             if(activeFeature == 0){
                 // Map Spectral Centroid and Rolloff to a sine wave
                 centroid = features->getSpectralCentroid();
+                
+                printf("Spectral Flatness: %f \n", centroid);
                 synthesizer->setLfoType(CLfo::LfoType_t::kSine);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
