@@ -102,17 +102,18 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             if(communicator->getADCValue(6) != 55555){
                 minBin = (int) roundf((features->getBinSize() * (communicator->getADCValue(6)) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
+                }
             } else {
                minBin = 0;
             }
             
             if(communicator->getADCValue(7) != 55555){
                 maxBin = (int) roundf(( features->getBinSize() * (communicator->getADCValue(7)) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
+                }
             } else {
                 maxBin = features->getBinSize();
             }
-            
-            
+    
             //Update threshold
             onsetThreshold = communicator->getADCValue(1);
             if(onsetThreshold == 55555){

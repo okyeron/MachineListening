@@ -50,11 +50,11 @@ void SpectralFeatures::reset(){
 }
 
 void SpectralFeatures::setFilterParams(int minBin, int maxBin){
-    this->minBin = minBin;
-    this->maxBin = maxBin;
-    
     if(minBin < 0){
         minBin = 0;
+    }
+    if(minBin >= binSize ){
+        minBin = binSize-1;
     }
     if(maxBin > binSize ){
         maxBin = binSize;
@@ -70,7 +70,10 @@ void SpectralFeatures::setFilterParams(int minBin, int maxBin){
         }
     }
     
-    //printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
+    this->minBin = minBin;
+    this->maxBin = maxBin;
+    
+    printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
 }
 
 int SpectralFeatures::getBinSize(){
