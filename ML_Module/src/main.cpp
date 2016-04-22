@@ -96,9 +96,9 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             /*** Get Parameters From Hardware ***/
             
             // Get minBin and maxBin values
-            //printf("PINS: %f, %f, %f, %f, %f, %f, %f, %f \n\n", communicator->getADCValue(0), communicator->getADCValue(1),
-                   communicator->getADCValue(2), communicator->getADCValue(2), communicator->getADCValue(3),
-                   communicator->getADCValue(5),communicator->getADCValue(6), communicator->getADCValue(7));
+//            printf("PINS: %f, %f, %f, %f, %f, %f, %f, %f \n\n", communicator->getADCValue(0), communicator->getADCValue(1),
+//                   communicator->getADCValue(2), communicator->getADCValue(2), communicator->getADCValue(3),
+//                   communicator->getADCValue(5),communicator->getADCValue(6), communicator->getADCValue(7));
             
             if(communicator->getADCValue(6) != 55555){
                 // Manual scaling for voltage offset
