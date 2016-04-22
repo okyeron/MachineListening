@@ -94,7 +94,7 @@ float FeatureCommunication::getADCValue(int iADC_channel){
     #ifdef __arm__
         return (float) (RESOLUTION - readADC(iADC_channel)) / (float) RESOLUTION;
     #endif
-    return 55555;
+    return 55555.0;
 }
 
 int FeatureCommunication::readDigital(int iPinNumber){
