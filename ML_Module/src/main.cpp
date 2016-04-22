@@ -38,7 +38,6 @@ using namespace std;
 #define SAMPLE_RATE         (44100)
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   (1024)
-#define NULL_INT            (2147483648)
 #define NUM_FEATURES        (3)
 
 typedef float SAMPLE;
@@ -100,13 +99,13 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             minBin = communicator->getADCValue(6);
             maxBin = communicator->getADCValue(7);
             
-            if(minBin != NULL_INT){
+            if(minBin != -2147483648){
                 minBin = (int) roundf((features->getBinSize() * (minBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
             } else {
                minBin = 0;
             }
             
-            if(maxBin != NULL_INT){
+            if(maxBin != -2147483648){
                 maxBin = (int) roundf((features->getBinSize() * (maxBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
             } else {
                 maxBin = features->getBinSize();
@@ -116,17 +115,17 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             //Update threshold
             onsetThreshold = communicator->getADCValue(1);
-            if(onsetThreshold == NULL_INT){
+            if(onsetThreshold == -2147483648){
                 onsetThreshold = 0.7;
             } else {
                 onsetThreshold = 5 * onsetThreshold;
             }
             
-            printf("Onset Thresh: %f \n\n", onsetThreshold);
+            printf("Onset Thresh: %f \n", onsetThreshold);
             
             // Update inter-onset interval (in ms) 0 - 4.096 s
             interOnsetInterval = communicator->getADCValue(0);
-            if(interOnsetInterval == NULL_INT){
+            if(interOnsetInterval == -2147483648){
                 interOnsetInterval = 0.01;
             } else {
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
@@ -142,7 +141,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             features->setFilterParams(minBin, maxBin);
             
             // Check which feature to output
-            if(communicator->readDigital(25)){
+            if(communicator->readDigital(25) == 1){
                 activeFeature = (activeFeature+1) % NUM_FEATURES;
             }
             
@@ -162,7 +161,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 // Map Spectral Centroid and Rolloff to a sine wave
                 centroid = features->getSpectralCentroid();
                 
-                printf("Spectral Flatness: %f \n", centroid);
+                printf("Centroid: %f \n", centroid);
                 synthesizer->setLfoType(CLfo::LfoType_t::kSine);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
@@ -185,6 +184,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             }
             
             // Map RMS to DC voltage
+            
+             printf("------ \n\n");
             
         } else{
             gNumNoInputs += 1;
@@ -221,7 +222,7 @@ int main(void)
 
     if(numDevices > 1){
         // Set input to USB -- device 1 -- for testing on OSX, switch to 0
-        inputParameters.device = 1;
+        inputParameters.device = 0;
     } else {
         inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
     }

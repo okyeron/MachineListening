@@ -32,7 +32,6 @@
 #define ADC_NUM_CHANNELS 8
 #define RESOLUTION 4095 // 1023 if using MCP3008; 4095 if using MCP3208
 #define DEADBAND 2
-#define NULL_INT (2147483648)
 
 FeatureCommunication::FeatureCommunication(){
     iFeatureSwitch = 0;
@@ -95,14 +94,14 @@ float FeatureCommunication::getADCValue(int iADC_channel){
     #ifdef __arm__
         return (float) (RESOLUTION - readADC(iADC_channel)) / (float) RESOLUTION;
     #endif
-    return NULL_INT;
+    return INFINITY;
 }
 
 int FeatureCommunication::readDigital(int iPinNumber){
     #ifdef __arm__
         return digitalRead(iPinNumber);
     #endif
-    return NULL_INT;
+    return INFINITY;
 }
 
 void FeatureCommunication::writeGPIO(int GPIOChannel, float writeValue, int writeType){
