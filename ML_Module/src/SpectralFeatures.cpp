@@ -23,6 +23,7 @@ void SpectralFeatures::init (int numBins, int fs) {
     binSize = numBins;
     sampleRate = fs;
     prevFlux = 0.0;
+    prevCentroid = 0.0;
     fifo = new float[binSize];
     fifo = initArray(fifo, binSize);
     
@@ -128,6 +129,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     centroid = 0.0;
     crest = 0.0;
     
+    
     if (spectrum_sum > 0.001){
         //Calculate Spectral Crest
         calculateSpectralCrest(spectrum, spectrum_abs_sum);
@@ -163,6 +165,13 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
+    
+    
+    // Low pass filter
+    float alpha = 0.7;
+    centroid = (1-alpha)*centroid + alpha * prevCentroid;
+    
+    prevCentroid = centroid;
 }
 
 void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_abs_sum){
@@ -191,7 +200,7 @@ float SpectralFeatures::getOnset(float threshold, float interOnsetinterval){
     /* Print and send voltage if spectral flux is greater than threshold */
     if(flux > thresh && ms.count() >= interOnsetinterval){
         onset = 1;
-        printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
+        //printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         
         // Update the last read time of threshold
         t_threshTime = Clock::now();

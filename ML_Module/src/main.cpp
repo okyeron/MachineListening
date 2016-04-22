@@ -10,15 +10,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <chrono>
+
 #include "portaudio.h"
 #include "FFT.h"
 #include "SpectralFeatures.h"
 #include "Lfo.h"
 #include "FeatureCommunication.hpp"
 
-#ifdef __arm__
-    #include <wiringPi.h>
-#endif
+
 
 #ifdef __APPLE__
     #import <CoreAudio/CoreAudio.h>
@@ -29,6 +29,12 @@
 #endif
 using namespace std;
 
+typedef std::chrono::high_resolution_clock Clock;
+typedef std::chrono::milliseconds milliseconds;
+
+Clock::time_point t_commTime;
+Clock::time_point timeCompare;
+milliseconds ms;
 
 /*
  ** Note that many of the older ISA sound cards on PCs do NOT support
@@ -101,42 +107,30 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
 //                   communicator->getADCValue(2), communicator->getADCValue(2), communicator->getADCValue(3),
 //                   communicator->getADCValue(5),communicator->getADCValue(6), communicator->getADCValue(7));
             
-            if(communicator->getADCValue(6) != 55555){
+            // Case where hardware is not active. IE running on Mac OSX
+            if(communicator->checkIfValid(communicator->getADCValue(0))){
+                
+                //Update minBin and maxBin
                 // Manual scaling for voltage offset
                 minBin = (int) roundf((features->getBinSize() * (communicator->getADCValue(6)) - 33) * (512 / 462.0));
-            } else {
-               minBin = 0;
-            }
-            
-            if(communicator->getADCValue(7) != 55555){
-                // Manual scaling for voltage offset
                 maxBin = (int) roundf(( features->getBinSize() * (communicator->getADCValue(7)) - 33) * (512 / 462.0));
-            } else {
+                
+                // Update inter-onset interval (in ms) 0 - 4.096 s
+                interOnsetInterval = communicator->getADCValue(0);
+                interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
+                
+                //Update threshold
+                onsetThreshold = 5 * communicator->getADCValue(1);
+            } else{
+                minBin = 0;
                 maxBin = features->getBinSize();
+                onsetThreshold = 0.7;
+                interOnsetInterval = 0.01;
             }
             
             // Set the filter params using minBin and maxBin
             features->setFilterParams(minBin, maxBin);
     
-            //Update threshold
-            onsetThreshold = communicator->getADCValue(1);
-            if(onsetThreshold == 55555){
-                onsetThreshold = 0.7;
-            } else {
-                onsetThreshold = 5 * onsetThreshold;
-                //printf("Onset Thresh: %f \n", onsetThreshold);
-            }
-            
-            
-            // Update inter-onset interval (in ms) 0 - 4.096 s
-            interOnsetInterval = communicator->getADCValue(0);
-            if(interOnsetInterval == 55555){
-                interOnsetInterval = 0.01;
-            } else {
-                interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
-                //printf("Interonset: %f \n\n", interOnsetInterval);
-            }
-            
             // Set voltage to low if 10ms has passed
             if(features->getTimePassedSinceLastOnsetInMs() >= 10){
                 communicator->writeGPIO(26,0,0);
@@ -181,10 +175,18 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 //printf("Centroid: %f \n", centroid);
                 synthesizer->setLfoType(CLfo::LfoType_t::kSine);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
-                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
                 
                 // Mapped to frequency and 1v / octave
-                communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 102.4), 1);
+                // Set voltage to low if 10ms has passed
+                timeCompare = Clock::now();
+                ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_commTime);
+                
+                if(ms.count() >= 10){
+                    synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
+                    t_commTime = Clock::now();
+                    communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
+                }
+                
             } else if(activeFeature == 1){
                 // Map Spectral Flatness to White noise
                 flatness = features->getSpectralFlatness();
@@ -208,8 +210,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         
         for( i=0; i<framesPerBuffer; i++ )
         {
-            *out++ = 0.6 * *in++;     /* left  - clean */
-            *out++ = 0.6 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
+            *out++ = 0.5 * *in++;     /* left  - clean */
+            *out++ = 1.0 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
         }
     }
     return paContinue;

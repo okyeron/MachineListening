@@ -32,6 +32,7 @@
 #define ADC_NUM_CHANNELS 8
 #define RESOLUTION 4095 // 1023 if using MCP3008; 4095 if using MCP3208
 #define DEADBAND 2
+#define INVALID 55555.0
 
 FeatureCommunication::FeatureCommunication(){
     iFeatureSwitch = 0;
@@ -42,10 +43,10 @@ FeatureCommunication::FeatureCommunication(){
         
         // GPIO Digital Output
         pinMode(16, OUTPUT); //Spectral Feature output
-        softPwmCreate(16,0,1024);
+        softPwmCreate(16,0,256);
         
         pinMode(26, OUTPUT); //Onset Trigger output
-        //softPwmCreate(26,0,1024);
+        softPwmCreate(26,0,256);
     
         // Switches
         pinMode(23, INPUT); //Switch 1
@@ -94,14 +95,30 @@ float FeatureCommunication::getADCValue(int iADC_channel){
     #ifdef __arm__
         return (float) (RESOLUTION - readADC(iADC_channel)) / (float) RESOLUTION;
     #endif
-    return 55555.0;
+    return INVALID;
 }
 
 int FeatureCommunication::readDigital(int iPinNumber){
     #ifdef __arm__
         return digitalRead(iPinNumber);
     #endif
-    return 55555;
+    return (int) INVALID;
+}
+
+bool FeatureCommunication::checkIfValid(int check){
+    if(check == (int) INVALID){
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool FeatureCommunication::checkIfValid(float check){
+    if(check == INVALID){
+        return false;
+    } else {
+        return true;
+    }
 }
 
 void FeatureCommunication::writeGPIO(int GPIOChannel, float writeValue, int writeType){

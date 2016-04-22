@@ -56,6 +56,7 @@ protected:
     float flatness;
     float rolloff;
     float centroid;
+    float prevCentroid;
     float rms;
     float delayTime; //Delay in MS
     

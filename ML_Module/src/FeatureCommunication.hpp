@@ -38,6 +38,8 @@ public:
     int     getResolution();
     int     readDigital(int iPinNumber);
     void    writeGPIO(int GPIOChannel, float writeValue, int writeType);
+    bool    checkIfValid(int check);
+    bool    checkIfValid(float check);
     
     float scaleFrequency(float feature){
         if(feature > A4_HZ * pow(2,OCTAVE_OFFSET)){
