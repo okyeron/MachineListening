@@ -55,7 +55,7 @@ int minBin;
 int maxBin;
 float onsetThreshold;
 float interOnsetInterval;
-int activeFeature = 0;
+int activeFeature;
 
 static int gNumNoInputs = 0;
 int numDevices = -1;
@@ -113,6 +113,9 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             } else {
                 maxBin = features->getBinSize();
             }
+            
+            // Set the filter params using minBin and maxBin
+            features->setFilterParams(minBin, maxBin);
     
             //Update threshold
             onsetThreshold = communicator->getADCValue(1);
@@ -138,15 +141,6 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 communicator->writeGPIO(26,0,0);
             }
             
-            // Set the filter params
-            features->setFilterParams(0, 512);
-            
-            // Check which feature to output
-            if(communicator->readDigital(23) == 1){
-                printf("Updating activeFeature! \n");
-                activeFeature = (activeFeature+1) % NUM_FEATURES;
-            }
-            
             /*** Extract Features ***/
             
             // Extract Spectral features for the block
@@ -157,6 +151,13 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             onset = features->getOnset(onsetThreshold, interOnsetInterval);
             if(onset){
                 communicator->writeGPIO(26,1,0);
+            }
+            
+            /***  Check which feature to output ***/
+            
+            if(communicator->readDigital(25) == 1){
+                printf("Updating activeFeature! \n");
+                activeFeature = (activeFeature+1) % NUM_FEATURES;
             }
             
             if(activeFeature == 0){
@@ -170,20 +171,21 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 
                 // Mapped to frequency and 1v / octave
                 communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 102.4), 1);
-            } else if(activeFeature == 1){
-                // Map Spectral Flatness to White noise
-                flatness = features->getSpectralFlatness();
-                
-                printf("Spectral Flatness: %f \n", flatness);
-                
-                // ***TODO***: Make sure flatness is between 0 and 1.0
-                if(flatness > 1.0){
-                    flatness = 1.0;
-                }
-                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 440);
-                synthesizer->setLfoType(CLfo::LfoType_t::kNoise);
-                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, flatness);
             }
+//            else if(activeFeature == 1){
+//                // Map Spectral Flatness to White noise
+//                flatness = features->getSpectralFlatness();
+//                
+//                printf("Spectral Flatness: %f \n", flatness);
+//                
+//                // ***TODO***: Make sure flatness is between 0 and 1.0
+//                if(flatness > 1.0){
+//                    flatness = 1.0;
+//                }
+//                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 440);
+//                synthesizer->setLfoType(CLfo::LfoType_t::kNoise);
+//                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, flatness);
+//            }
             
             // Map RMS to DC voltage
             
@@ -261,6 +263,8 @@ int main(void)
     synthesizer = new CLfo(SAMPLE_RATE);
     
     communicator = new FeatureCommunication();
+    
+    activeFeature = 0;
     
     err = Pa_OpenStream(
                         &stream,
