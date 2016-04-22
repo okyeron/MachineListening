@@ -39,7 +39,6 @@ using namespace std;
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   1024
 #define NUM_FEATURES        3
-#define ERROR_INT           55555
 
 typedef float SAMPLE;
 FFT *fft;
@@ -100,13 +99,13 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             minBin = communicator->getADCValue(6);
             maxBin = communicator->getADCValue(7);
             
-            if(minBin != ERROR_INT){
+            if(minBin != 55555){
                 minBin = (int) roundf((features->getBinSize() * (minBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
             } else {
                minBin = 0;
             }
             
-            if(maxBin != ERROR_INT ){
+            if(maxBin != 55555){
                 maxBin = (int) roundf((features->getBinSize() * (maxBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
             } else {
                 maxBin = features->getBinSize();
@@ -116,7 +115,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             //Update threshold
             onsetThreshold = communicator->getADCValue(1);
-            if(onsetThreshold == ERROR_INT){
+            if(onsetThreshold == 55555){
                 onsetThreshold = 0.7;
             } else {
                 onsetThreshold = 5 * onsetThreshold;
@@ -126,7 +125,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             // Update inter-onset interval (in ms) 0 - 4.096 s
             interOnsetInterval = communicator->getADCValue(0);
-            if(interOnsetInterval == ERROR_INT){
+            if(interOnsetInterval == 55555){
                 interOnsetInterval = 0.01;
             } else {
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
