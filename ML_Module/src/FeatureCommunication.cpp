@@ -118,4 +118,3 @@ void FeatureCommunication::writeGPIO(int GPIOChannel, float writeValue, int writ
         }
     #endif
 }
-

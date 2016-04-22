@@ -25,6 +25,8 @@
 // Spectral Scaling - shift : ADC 4
 // Spectral scaling - mult  : ADC 5
 
+#define A4_HZ (440.0)
+#define OCTAVE_OFFSET (5)
 
 class FeatureCommunication {
 public:
@@ -36,6 +38,17 @@ public:
     int     getResolution();
     int     readDigital(int iPinNumber);
     void    writeGPIO(int GPIOChannel, float writeValue, int writeType);
+    
+    float scaleFrequency(float feature){
+        if(feature > A4_HZ * pow(2,OCTAVE_OFFSET)){
+            feature = A4_HZ * pow(2,OCTAVE_OFFSET);
+        }
+        else if(feature < A4_HZ / (float) pow(2,OCTAVE_OFFSET)){
+            feature = A4_HZ / (float) pow(2,OCTAVE_OFFSET);
+        }
+        
+        return log2f(feature/A4_HZ)+OCTAVE_OFFSET;
+    }
     
     int iFeatureSwitch;
     

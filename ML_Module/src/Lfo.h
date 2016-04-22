@@ -34,6 +34,7 @@ public:
         kSine,
         kSaw,
         kRect,
+        kNoise,
 
         kNumLfoTypes
     };
@@ -84,6 +85,9 @@ private:
             break;
         case kRect:
             CSynthesis::generateRect (pfBuff, 1.F, 1.F*m_kiBufferLength, m_kiBufferLength);
+            break;
+        case kNoise:
+            CSynthesis::generateNoise(pfBuff,1.F*m_kiBufferLength, 1.F);
             break;
         }
 

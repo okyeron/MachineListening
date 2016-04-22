@@ -39,6 +39,7 @@ using namespace std;
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   (1024)
 #define NULL_INT            (-2147483648)
+#define NUM_FEATURES        (3)
 
 typedef float SAMPLE;
 FFT *fft;
@@ -50,10 +51,12 @@ FeatureCommunication *communicator;
 //Feature variables
 int onset;
 float centroid = 0.0;
+float flatness = 0.0;
 int minBin;
 int maxBin;
 float onsetThreshold;
 float interOnsetInterval;
+int activeFeature = 0;
 
 static int gNumNoInputs = 0;
 int numDevices = -1;
@@ -108,8 +111,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             } else {
                 maxBin = features->getBinSize();
             }
-            
-            printf("minbin: %i, maxbin: %i \n", minBin, maxBin);
+            //printf("minbin: %i, maxbin: %i \n", minBin, maxBin);
             
             
             //Update threshold
@@ -136,31 +138,46 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             // Set the filter params
             features->setFilterParams(minBin, maxBin);
             
+            // Check which feature to output
+            if(communicator->readDigital(25)){
+                activeFeature = (activeFeature+1) % NUM_FEATURES;
+            }
+            
             /*** Extract Features ***/
             
             // Extract Spectral features for the block
             features->extractFeatures(spectrum);
             
-            printf("Thresh: %f \n", onsetThreshold);
+            //printf("Thresh: %f \n", onsetThreshold);
             // Get the onset
             onset = features->getOnset(onsetThreshold, interOnsetInterval);
             if(onset){
                 communicator->writeGPIO(26,1,0);
             }
             
-            // Map Spectral Centroid and Rolloff to a sine wave
-            centroid = features->getSpectralCentroid();
-            synthesizer->setLfoType(CLfo::LfoType_t::kSine);
-            synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
-            synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
-            
-            // Mapped to frequency and 1v / octave
-            
-            //if(fc_communicator->readDigital(25))
-            communicator->writeGPIO(16, (int) roundf(features->scaleFrequency(centroid) * 102.4), 1);
-            
-            // Map Spectral Flatness to White noise
-            
+            if(activeFeature == 0){
+                // Map Spectral Centroid and Rolloff to a sine wave
+                centroid = features->getSpectralCentroid();
+                synthesizer->setLfoType(CLfo::LfoType_t::kSine);
+                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
+                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
+                
+                // Mapped to frequency and 1v / octave
+                communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 102.4), 1);
+            } else if(activeFeature == 1){
+                // Map Spectral Flatness to White noise
+                flatness = features->getSpectralFlatness();
+                
+                printf("Spectral Flatness: %f \n", flatness);
+                
+                // ***TODO***: Make sure flatness is between 0 and 1.0
+                if(flatness > 1.0){
+                    flatness = 1.0;
+                }
+                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 440);
+                synthesizer->setLfoType(CLfo::LfoType_t::kNoise);
+                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, flatness);
+            }
             
             // Map RMS to DC voltage
             
@@ -267,5 +284,3 @@ error:
     fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
     return -1;
 }
-
-

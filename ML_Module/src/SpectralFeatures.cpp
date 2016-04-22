@@ -7,10 +7,6 @@
 //
 
 #include "SpectralFeatures.h"
-#include "Synthesis.h"
-
-#define A4_HZ (440.0)
-#define OCTAVE_OFFSET (5)
 
 /* Constructor */
 SpectralFeatures::SpectralFeatures () {
@@ -164,17 +160,6 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
 }
 
-float SpectralFeatures::scaleFrequency(float feature){
-    if(feature > A4_HZ * pow(2,OCTAVE_OFFSET)){
-        feature = A4_HZ * pow(2,OCTAVE_OFFSET);
-    }
-    else if(feature < A4_HZ / (float) pow(2,OCTAVE_OFFSET)){
-        feature = A4_HZ / (float) pow(2,OCTAVE_OFFSET);
-    }
-    
-    return log2f(feature/A4_HZ)+OCTAVE_OFFSET;
-}
-
 void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_abs_sum){
     crest = max_abs_array(spectrum, binSize) / spectrum_abs_sum;
 }
@@ -200,7 +185,6 @@ float SpectralFeatures::getOnset(float threshold, float interOnsetinterval){
     
     /* Print and send voltage if spectral flux is greater than threshold */
     if(flux > thresh && ms.count() >= interOnsetinterval){
-        //printf("DelayTime: %f\n",delayTime);
         onset = 1;
         printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         

@@ -1,9 +1,9 @@
 //
-//  SpectralFeatures.hpp
+//  SpectralFeatures.h
 //  module
 //
 //  Created by Christopher Latina on 11/24/15.
-//  Copyright © 2015 Christopher Latina. All rights reserved.
+//  Copyright © 2016 Christopher Latina. All rights reserved.
 //
 
 #ifndef SpectralFeatures_hpp
@@ -18,12 +18,34 @@
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::milliseconds milliseconds;
 
-
 #endif /* SpectralFeatures_hpp */
-
 
 class SpectralFeatures {
 public:
+    /* Public Methods */
+    SpectralFeatures ();
+    virtual ~SpectralFeatures();
+    void init (int numBins, int fs);
+    void extractFeatures(float* spectrum);
+    
+    /* Public methods to get features */
+    float getTimePassedSinceLastOnsetInMs();
+    float getOnset(float threshold, float interOnsetinterval);
+    float getSpectralCrest();
+    float getSpectralFlatness();
+    float getSpectralRolloff();
+    float getSpectralCentroid();
+    float getRMS();
+    int getBinSize();
+    void setFilterParams(int minBin, int maxBin);
+    
+protected:
+    void reset();
+    void calculateSpectralFlux(float halfwave);
+    void calculateSpectralCentroid(float* spectrum, float spectrum_sum);
+    void calculateSpectralCrest(float* spectrum, float spectrum_abs_sum);
+    void calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum);
+    
     /* Feature variables */
     int binSize;
     int sampleRate;
@@ -34,7 +56,7 @@ public:
     float flatness;
     float rolloff;
     float centroid;
-    float rms; 
+    float rms;
     float delayTime; //Delay in MS
     
     Clock::time_point t_threshTime;
@@ -51,31 +73,6 @@ public:
     float log_spectrum_sum;
     float spectrum_abs_sum;
     float halfwave;
-    
-    /* Public Methods */
-    SpectralFeatures ();
-    virtual ~SpectralFeatures();
-    void init (int numBins, int fs);
-    void extractFeatures(float* spectrum);
-    
-    /* Public methods to get features */
-    float getTimePassedSinceLastOnsetInMs();
-    float getOnset(float threshold, float interOnsetinterval);
-    float getSpectralCrest();
-    float getSpectralFlatness();
-    float getSpectralRolloff();
-    float getSpectralCentroid();
-    float getRMS();
-    int getBinSize();
-    float scaleFrequency(float feature);
-    void setFilterParams(int minBin, int maxBin);
-    
-protected:
-    void reset();
-    void calculateSpectralFlux(float halfwave);
-    void calculateSpectralCentroid(float* spectrum, float spectrum_sum);
-    void calculateSpectralCrest(float* spectrum, float spectrum_abs_sum);
-    void calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum);
 
 private:
     float minThresh;
