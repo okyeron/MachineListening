@@ -38,7 +38,7 @@ using namespace std;
 #define SAMPLE_RATE         (44100)
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   (1024)
-#define NULL_INT            (-2147483648)
+#define NULL_INT            (2147483648)
 #define NUM_FEATURES        (3)
 
 typedef float SAMPLE;
