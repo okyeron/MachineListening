@@ -96,7 +96,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             /*** Get Parameters From Hardware ***/
             
             // Get minBin and maxBin values
-            printf("PINS: %f, %f, %f, %f, %f, %f, %f, %f \n\n", communicator->getADCValue(0), communicator->getADCValue(1),
+            //printf("PINS: %f, %f, %f, %f, %f, %f, %f, %f \n\n", communicator->getADCValue(0), communicator->getADCValue(1),
                    communicator->getADCValue(2), communicator->getADCValue(2), communicator->getADCValue(3),
                    communicator->getADCValue(5),communicator->getADCValue(6), communicator->getADCValue(7));
             
@@ -125,7 +125,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 onsetThreshold = 5 * onsetThreshold;
             }
             
-            printf("Onset Thresh: %f \n", onsetThreshold);
+            //printf("Onset Thresh: %f \n", onsetThreshold);
             
             // Update inter-onset interval (in ms) 0 - 4.096 s
             interOnsetInterval = communicator->getADCValue(0);
@@ -134,7 +134,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             } else {
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
             }
-            printf("Interonset: %f \n\n", interOnsetInterval);
+            //printf("Interonset: %f \n\n", interOnsetInterval);
             
             // Set voltage to low if 10ms has passed
             if(features->getTimePassedSinceLastOnsetInMs() >= 10){
@@ -155,10 +155,10 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             /***  Check which feature to output ***/
             
-            if(communicator->readDigital(25) == 1){
-                printf("Updating activeFeature! \n");
-                activeFeature = (activeFeature+1) % NUM_FEATURES;
-            }
+//            if(communicator->readDigital(25) == 1){
+//                printf("Updating activeFeature! \n");
+//                activeFeature = (activeFeature+1) % NUM_FEATURES;
+//            }
             
             if(activeFeature == 0){
                 // Map Spectral Centroid and Rolloff to a sine wave
@@ -188,8 +188,6 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
 //            }
             
             // Map RMS to DC voltage
-            
-             printf("------ \n\n");
             
         } else{
             gNumNoInputs += 1;
