@@ -35,11 +35,11 @@ using namespace std;
  ** full duplex audio (simultaneous record and playback).
  ** And some only support full duplex at lower sample rates.
  */
-#define SAMPLE_RATE         (44100)
+#define SAMPLE_RATE         44100
 #define PA_SAMPLE_TYPE      paFloat32
-#define FRAMES_PER_BUFFER   (1024)
-#define NUM_FEATURES        (3)
-#define INF                 (2147483647);
+#define FRAMES_PER_BUFFER   1024
+#define NUM_FEATURES        3
+#define ERROR_INT           55555
 
 typedef float SAMPLE;
 FFT *fft;
@@ -100,13 +100,13 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             minBin = communicator->getADCValue(6);
             maxBin = communicator->getADCValue(7);
             
-            if(minBin != INF){
+            if(minBin != ERROR_INT){
                 minBin = (int) roundf((features->getBinSize() * (minBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
             } else {
                minBin = 0;
             }
             
-            if(maxBin != INF ){
+            if(maxBin != ERROR_INT ){
                 maxBin = (int) roundf((features->getBinSize() * (maxBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
             } else {
                 maxBin = features->getBinSize();
@@ -116,7 +116,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             //Update threshold
             onsetThreshold = communicator->getADCValue(1);
-            if(onsetThreshold == INF){
+            if(onsetThreshold == ERROR_INT){
                 onsetThreshold = 0.7;
             } else {
                 onsetThreshold = 5 * onsetThreshold;
@@ -126,7 +126,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             // Update inter-onset interval (in ms) 0 - 4.096 s
             interOnsetInterval = communicator->getADCValue(0);
-            if(interOnsetInterval == INF){
+            if(interOnsetInterval == ERROR_INT){
                 interOnsetInterval = 0.01;
             } else {
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
