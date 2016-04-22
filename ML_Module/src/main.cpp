@@ -139,10 +139,11 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             }
             
             // Set the filter params
-            features->setFilterParams(minBin, maxBin);
+            features->setFilterParams(0, 512);
             
             // Check which feature to output
-            if(communicator->readDigital(25) == 1){
+            if(communicator->readDigital(23) == 1){
+                printf("Updating activeFeature! \n");
                 activeFeature = (activeFeature+1) % NUM_FEATURES;
             }
             
