@@ -38,7 +38,7 @@ using namespace std;
 #define SAMPLE_RATE         44100
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   1024
-#define NUM_FEATURES        3
+#define NUM_FEATURES        2
 
 typedef float SAMPLE;
 FFT *fft;
@@ -56,6 +56,7 @@ int maxBin;
 float onsetThreshold;
 float interOnsetInterval;
 int activeFeature;
+bool updateFeature = false;
 
 static int gNumNoInputs = 0;
 int numDevices = -1;
@@ -123,9 +124,9 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 onsetThreshold = 0.7;
             } else {
                 onsetThreshold = 5 * onsetThreshold;
+                //printf("Onset Thresh: %f \n", onsetThreshold);
             }
             
-            //printf("Onset Thresh: %f \n", onsetThreshold);
             
             // Update inter-onset interval (in ms) 0 - 4.096 s
             interOnsetInterval = communicator->getADCValue(0);
@@ -133,8 +134,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 interOnsetInterval = 0.01;
             } else {
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
+                //printf("Interonset: %f \n\n", interOnsetInterval);
             }
-            //printf("Interonset: %f \n\n", interOnsetInterval);
             
             // Set voltage to low if 10ms has passed
             if(features->getTimePassedSinceLastOnsetInMs() >= 10){
@@ -154,11 +155,24 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             }
             
             /***  Check which feature to output ***/
+            if(communicator->readDigital(25) == 0 && !updateFeature){
+                printf("Updating activeFeature! \n");
+                activeFeature = (activeFeature+1) % NUM_FEATURES;
+                updateFeature = true;
+            }
             
-//            if(communicator->readDigital(25) == 1){
-//                printf("Updating activeFeature! \n");
-//                activeFeature = (activeFeature+1) % NUM_FEATURES;
-//            }
+            if(communicator->readDigital(25) == 1 && updateFeature){
+               updateFeature = false;
+            }
+            
+            if(communicator->readDigital(23) == 0){
+                printf("23 Pushed \n");
+            }
+            
+            if(communicator->readDigital(24) == 0){
+                printf("24 Pushed \n");
+            }
+            
             
             if(activeFeature == 0){
                 // Map Spectral Centroid and Rolloff to a sine wave
@@ -171,21 +185,20 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 
                 // Mapped to frequency and 1v / octave
                 communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 102.4), 1);
+            } else if(activeFeature == 1){
+                // Map Spectral Flatness to White noise
+                flatness = features->getSpectralFlatness();
+                
+                printf("Spectral Flatness: %f \n", flatness);
+                
+                // ***TODO***: Make sure flatness is between 0 and 1.0
+                if(flatness > 1.0){
+                    flatness = 1.0;
+                }
+                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 440);
+                synthesizer->setLfoType(CLfo::LfoType_t::kNoise);
+                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, flatness);
             }
-//            else if(activeFeature == 1){
-//                // Map Spectral Flatness to White noise
-//                flatness = features->getSpectralFlatness();
-//                
-//                printf("Spectral Flatness: %f \n", flatness);
-//                
-//                // ***TODO***: Make sure flatness is between 0 and 1.0
-//                if(flatness > 1.0){
-//                    flatness = 1.0;
-//                }
-//                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 440);
-//                synthesizer->setLfoType(CLfo::LfoType_t::kNoise);
-//                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, flatness);
-//            }
             
             // Map RMS to DC voltage
             

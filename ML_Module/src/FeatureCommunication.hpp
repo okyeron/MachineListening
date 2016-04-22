@@ -20,8 +20,8 @@
 /* Move these to config file. */
 // Inter-Onset Time Interval: ADC 0
 // Onset Threshold          : ADC 1
-// Spectral lowpass cutoff  : ADC 2
-// Spectral hipass cutoff   : ADC 3
+// Spectral lowpass cutoff  : ADC 6
+// Spectral hipass cutoff   : ADC 7
 // Spectral Scaling - shift : ADC 4
 // Spectral scaling - mult  : ADC 5
 
