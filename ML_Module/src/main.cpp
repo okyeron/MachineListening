@@ -101,15 +101,15 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                    communicator->getADCValue(5),communicator->getADCValue(6), communicator->getADCValue(7));
             
             if(communicator->getADCValue(6) != 55555){
-                minBin = (int) roundf((features->getBinSize() * (communicator->getADCValue(6)) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
-                }
+                // Manual scaling for voltage offset
+                minBin = (int) roundf((features->getBinSize() * (communicator->getADCValue(6)) - 33) * (512 / 462.0));
             } else {
                minBin = 0;
             }
             
             if(communicator->getADCValue(7) != 55555){
-                maxBin = (int) roundf(( features->getBinSize() * (communicator->getADCValue(7)) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
-                }
+                // Manual scaling for voltage offset
+                maxBin = (int) roundf(( features->getBinSize() * (communicator->getADCValue(7)) - 33) * (512 / 462.0));
             } else {
                 maxBin = features->getBinSize();
             }
