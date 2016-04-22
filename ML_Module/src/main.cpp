@@ -39,6 +39,7 @@ using namespace std;
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   (1024)
 #define NUM_FEATURES        (3)
+#define INF                 (2147483647);
 
 typedef float SAMPLE;
 FFT *fft;
@@ -99,13 +100,13 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             minBin = communicator->getADCValue(6);
             maxBin = communicator->getADCValue(7);
             
-            if(minBin != -2147483648){
+            if(minBin != INF){
                 minBin = (int) roundf((features->getBinSize() * (minBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
             } else {
                minBin = 0;
             }
             
-            if(maxBin != -2147483648){
+            if(maxBin != INF ){
                 maxBin = (int) roundf((features->getBinSize() * (maxBin) - 33) * (512 / 462.0)); // Manual scaling for voltage offset
             } else {
                 maxBin = features->getBinSize();
@@ -115,7 +116,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             //Update threshold
             onsetThreshold = communicator->getADCValue(1);
-            if(onsetThreshold == -2147483648){
+            if(onsetThreshold == INF){
                 onsetThreshold = 0.7;
             } else {
                 onsetThreshold = 5 * onsetThreshold;
@@ -125,7 +126,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             // Update inter-onset interval (in ms) 0 - 4.096 s
             interOnsetInterval = communicator->getADCValue(0);
-            if(interOnsetInterval == -2147483648){
+            if(interOnsetInterval == INF){
                 interOnsetInterval = 0.01;
             } else {
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
@@ -222,7 +223,7 @@ int main(void)
 
     if(numDevices > 1){
         // Set input to USB -- device 1 -- for testing on OSX, switch to 0
-        inputParameters.device = 0;
+        inputParameters.device = 1;
     } else {
         inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
     }
