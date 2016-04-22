@@ -178,7 +178,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 // Map Spectral Centroid and Rolloff to a sine wave
                 centroid = features->getSpectralCentroid();
                 
-                printf("Centroid: %f \n", centroid);
+                //printf("Centroid: %f \n", centroid);
                 synthesizer->setLfoType(CLfo::LfoType_t::kSine);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
@@ -189,7 +189,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 // Map Spectral Flatness to White noise
                 flatness = features->getSpectralFlatness();
                 
-                printf("Spectral Flatness: %f \n", flatness);
+                //printf("Spectral Flatness: %f \n", flatness);
                 
                 // ***TODO***: Make sure flatness is between 0 and 1.0
                 if(flatness > 1.0){
