@@ -103,11 +103,6 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         {
             /*** Get Parameters From Hardware ***/
             
-            // Get minBin and maxBin values
-//            printf("PINS: %f, %f, %f, %f, %f, %f, %f, %f \n\n", communicator->getADCValue(0), communicator->getADCValue(1),
-//                   communicator->getADCValue(2), communicator->getADCValue(2), communicator->getADCValue(3),
-//                   communicator->getADCValue(5),communicator->getADCValue(6), communicator->getADCValue(7));
-            
             // Case where hardware is not active. IE running on Mac OSX
             if(communicator->checkIfValid(communicator->getADCValue(0))){
                 
@@ -116,8 +111,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 
                 //Update minBin and maxBin
                 // Manual scaling for voltage offset
-                minBin = (int) roundf((features->getBinSize() * (communicator->getADCValue(6)) - 33) * (512 / 462.0));
-                maxBin = (int) roundf(( features->getBinSize() * (communicator->getADCValue(7)) - 33) * (512 / 462.0));
+                minBin = (int) roundf((features->getBinSize() * (communicator->getADCValue(6)) - 34) * (512 / 462.0));
+                maxBin = (int) roundf(( features->getBinSize() * (communicator->getADCValue(7)) - 34) * (512 / 462.0));
                 
                 // Update inter-onset interval (in ms) 0 - 4.096 s
                 interOnsetInterval = communicator->getADCValue(0);
@@ -183,7 +178,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                     t_commTime = Clock::now();
                     
                     // Map RMS to DC voltage
-                    //printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
+                    printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
                     //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
                 //}
                 
@@ -214,6 +209,10 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         }
     }
     return paContinue;
+}
+
+void printAllPins(){
+    printf("PINS: %f, %f, %f, %f, %f, %f, %f, %f \n\n", communicator->getADCValue(0), communicator->getADCValue(1), communicator->getADCValue(2), communicator->getADCValue(2), communicator->getADCValue(3), communicator->getADCValue(5),communicator->getADCValue(6), communicator->getADCValue(7));
 }
 
 /*******************************************************************/

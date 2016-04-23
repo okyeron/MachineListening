@@ -172,18 +172,19 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
         centroid = centroid / spectrum_sum;
     } catch (std::logic_error e) {
         centroid = 0.0;
-        return;
     }
     
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) getFilteredBinSize()) * (sampleRate / 2);
     
-    
     // Low pass filter
-    //float alpha = 0.7;
-    //centroid = (1-alpha)*centroid + alpha * prevCentroid;
+    float alpha = 0.5;
+    centroid = (1-alpha)*centroid + alpha * prevCentroid;
     
-    printf("Centroid 3: %f, PrevCentroid  %f \n", centroid, prevCentroid);
+    //Make sure centroid doesn't exceed human hearing / nyquist. 
+    if(centroid > 20000){
+        centroid = 20000.0;
+    }
     
     prevCentroid = centroid;
 }
