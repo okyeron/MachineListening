@@ -178,7 +178,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                     t_commTime = Clock::now();
                     
                     // Map RMS to DC voltage
-                    printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
+                    //printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
                     //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
                 //}
                 

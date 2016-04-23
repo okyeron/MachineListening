@@ -208,8 +208,9 @@ void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float s
             return;
         }
     }
-    else
+    else{
         flatness = 0.0;
+    }
 }
 
 float SpectralFeatures::getTimePassedSinceLastOnsetInMs(){
@@ -226,7 +227,6 @@ float SpectralFeatures::getOnset(float thresh, float interOnsetinterval){
     
     /* Print and send voltage if spectral flux is greater than threshold */
     if(flux > thresh && ms.count() >= interOnsetinterval){
-        printf("Flux: %f, Thresh: %f \n", flux, thresh);
         onset = 1;
         //printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         
