@@ -41,6 +41,7 @@ public:
     
 protected:
     void reset();
+    void calculateRMS(float power, int minBin, int maxBin);
     void calculateSpectralFlux(float halfwave);
     void calculateSpectralCentroid(float* spectrum, float spectrum_sum);
     void calculateSpectralCrest(float* spectrum, float spectrum_abs_sum);

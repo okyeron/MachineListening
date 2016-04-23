@@ -116,14 +116,14 @@ void SpectralFeatures::extractFeatures(float* spectrum)
         spectrum_sq[i] = spectrum[i] * spectrum[i];
     }
     
-    //Calculate RMS
-    rms = sqrtf((1/(float)(maxBin-minBin)) * power);
-    
     /* Update fifo */
     setFifo(spectrum,binSize);
     
     /* Calculate Spectral Flux */
     calculateSpectralFlux(halfwave);
+    
+    //Calculate RMS
+    calculateRMS(power, maxBin, minBin);
     
     // Silent frames
     centroid = 0.0;
@@ -140,6 +140,10 @@ void SpectralFeatures::extractFeatures(float* spectrum)
         //Calculate Spectral Flatness
         calculateSpectralFlatness(log_spectrum_sum, spectrum_sum);
     }
+}
+
+void SpectralFeatures::calculateRMS(float power, int minBin, int maxBin){
+    rms = sqrtf((1/(float)(maxBin-minBin)) * power);
 }
 
 void SpectralFeatures::calculateSpectralFlux(float halfwave)

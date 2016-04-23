@@ -59,6 +59,7 @@ float centroid = 0.0;
 float flatness = 0.0;
 int minBin;
 int maxBin;
+float volume = 0.0;
 float onsetThreshold;
 float interOnsetInterval;
 int activeFeature;
@@ -110,6 +111,9 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             // Case where hardware is not active. IE running on Mac OSX
             if(communicator->checkIfValid(communicator->getADCValue(0))){
                 
+                // Get volume
+                volume = communicator->getADCValue(4);
+                
                 //Update minBin and maxBin
                 // Manual scaling for voltage offset
                 minBin = (int) roundf((features->getBinSize() * (communicator->getADCValue(6)) - 33) * (512 / 462.0));
@@ -120,8 +124,9 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
                 
                 //Update threshold
-                onsetThreshold = 5 * communicator->getADCValue(1);
+                onsetThreshold = 10 * communicator->getADCValue(1);
             } else{
+                volume = 0.6;
                 minBin = 0;
                 maxBin = features->getBinSize();
                 onsetThreshold = 0.7;
@@ -151,7 +156,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             /***  Check which feature to output ***/
             if(communicator->readDigital(25) == 0 && !updateFeature){
-                printf("Updating activeFeature! \n");
+                //printf("Updating activeFeature! \n");
                 activeFeature = (activeFeature+1) % NUM_FEATURES;
                 updateFeature = true;
             }
@@ -159,15 +164,6 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             if(communicator->readDigital(25) == 1 && updateFeature){
                updateFeature = false;
             }
-            
-            if(communicator->readDigital(23) == 0){
-                printf("23 Pushed \n");
-            }
-            
-            if(communicator->readDigital(24) == 0){
-                printf("24 Pushed \n");
-            }
-            
             
             if(activeFeature == 0){
                 // Map Spectral Centroid and Rolloff to a sine wave
@@ -182,14 +178,14 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 timeCompare = Clock::now();
                 ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_commTime);
                 
-                if(ms.count() >= 10){
+                //if(ms.count() >= 10){
                     synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
                     t_commTime = Clock::now();
                     
                     // Map RMS to DC voltage
-                    printf("RMS: %f, Rolloff: %f, Crest: %f, \n",features->getRMS(), features->getSpectralRolloff(), features->getSpectralCrest());
+                    printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
                     //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
-                }
+                //}
                 
             } else if(activeFeature == 1){
                 // Map Spectral Flatness to White noise
@@ -213,7 +209,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         
         for( i=0; i<framesPerBuffer; i++ )
         {
-            *out++ = 0.5 * *in++;     /* left  - clean */
+            *out++ = volume * *in++;     /* left  - clean */
             *out++ = 1.0 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
         }
     }
