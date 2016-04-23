@@ -124,7 +124,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
                 
                 //Update threshold
-                onsetThreshold = 25 * communicator->getADCValue(1);
+                onsetThreshold = 8 * communicator->getADCValue(1);
             } else{
                 volume = 0.6;
                 minBin = 0;
@@ -183,7 +183,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                     t_commTime = Clock::now();
                     
                     // Map RMS to DC voltage
-                    printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
+                    //printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
                     //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
                 //}
                 

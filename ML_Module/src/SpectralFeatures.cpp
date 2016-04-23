@@ -81,6 +81,10 @@ int SpectralFeatures::getBinSize(){
     return binSize;
 }
 
+int SpectralFeatures::getFilteredBinSize(){
+    return maxBin - minBin;
+}
+
 /*  Method to extract spectral features.
     Input arguments are the magnitude spectrum and block size */
 void SpectralFeatures::extractFeatures(float* spectrum)
@@ -120,23 +124,20 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     /* Calculate Spectral Flux */
     calculateSpectralFlux(halfwave);
     
-    //Calculate RMS
-    calculateRMS(power, minBin, maxBin);
-    
-    // Silent frames
-    centroid = 0.0;
-    crest = 0.0;
-    
-    
     if (spectrum_sum > 0.001){
+        
+        //Calculate RMS
+        calculateRMS(power, minBin, maxBin);
+        
         //Calculate Spectral Crest
         calculateSpectralCrest(spectrum, spectrum_abs_sum);
         
         //Calculate Spectral Centroid
-        calculateSpectralCentroid(spectrum, spectrum_sum);
+        calculateSpectralCentroid(spectrum, spectrum_sum, minBin, maxBin);
         
         //Calculate Spectral Flatness
         calculateSpectralFlatness(log_spectrum_sum, spectrum_sum);
+        
     }
 }
 
@@ -149,10 +150,9 @@ void SpectralFeatures::calculateRMS(float power, int minBin, int maxBin){
     }
 }
 
-void SpectralFeatures::calculateSpectralFlux(float halfwave)
-{
+void SpectralFeatures::calculateSpectralFlux(float halfwave){
     //Calculate Spectral Flux
-    flux = halfwave / (binSize);
+    flux = halfwave / (getFilteredBinSize());
     
     // Low pass filter
     float alpha = 0.1;
@@ -162,10 +162,9 @@ void SpectralFeatures::calculateSpectralFlux(float halfwave)
     prevFlux = flux;
 }
 
-void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum_sum)
-{
+void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum_sum, int minBin, int maxBin){
     centroid = 0.0;
-    for (int i=0; i<binSize; i++) {
+    for (int i=minBin; i<maxBin; i++) {
         centroid += i*spectrum[i];
     }
     
@@ -177,19 +176,22 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     }
     
     // Convert centroid from bin index to frequency
-    centroid = (centroid / (float) binSize) * (sampleRate / 2);
+    centroid = (centroid / (float) getFilteredBinSize()) * (sampleRate / 2);
     
     
     // Low pass filter
-    float alpha = 0.7;
-    centroid = (1-alpha)*centroid + alpha * prevCentroid;
+    //float alpha = 0.7;
+    //centroid = (1-alpha)*centroid + alpha * prevCentroid;
+    
+    printf("Centroid 3: %f, PrevCentroid  %f \n", centroid, prevCentroid);
     
     prevCentroid = centroid;
 }
 
 void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_abs_sum){
+    crest = 0.0;
     try {
-        crest = max_abs_array(spectrum, binSize) / spectrum_abs_sum;
+        crest = max_abs_array(spectrum, getFilteredBinSize()) / spectrum_abs_sum;
     } catch (std::logic_error e) {
         crest = 0.0;
         return;
@@ -197,10 +199,11 @@ void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_ab
 }
 
 void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum) {
-    if((spectrum_sum / binSize) > minThresh){
+    if((spectrum_sum / getFilteredBinSize()) > minThresh){
         try {
-            flatness = exp(log_spectrum_sum / (float) binSize) / (spectrum_sum / (float) binSize);
+            flatness = exp(log_spectrum_sum / (float) getFilteredBinSize()) / (spectrum_sum / (float) getFilteredBinSize());
         } catch (std::logic_error e) {
+            flatness = 0.0;
             return;
         }
     }
@@ -219,7 +222,6 @@ float SpectralFeatures::getOnset(float thresh, float interOnsetinterval){
     timeCompare = Clock::now();
     ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_threshTime);
     // printf("TimePassed: .... %lld\n", ms.count());
-    
     
     /* Print and send voltage if spectral flux is greater than threshold */
     if(flux > thresh && ms.count() >= interOnsetinterval){
