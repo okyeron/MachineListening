@@ -76,7 +76,7 @@ void SpectralFeatures::setFilterParams(int minBin, int maxBin){
     this->minBin = minBin;
     this->maxBin = maxBin;
     
-    printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
+    //printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
 }
 
 int SpectralFeatures::getBinSize(){
@@ -123,7 +123,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     calculateSpectralFlux(halfwave);
     
     //Calculate RMS
-    calculateRMS(power, maxBin, minBin);
+    calculateRMS(power, minBin, maxBin);
     
     // Silent frames
     centroid = 0.0;
@@ -201,8 +201,10 @@ float SpectralFeatures::getOnset(float threshold, float interOnsetinterval){
     ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_threshTime);
     // printf("TimePassed: .... %lld\n", ms.count());
     
+    
     /* Print and send voltage if spectral flux is greater than threshold */
     if(flux > thresh && ms.count() >= interOnsetinterval){
+        printf("Flux: %f, Thresh: %f \n", flux, thresh);
         onset = 1;
         //printf("Onset: %i, Flux: %f, Thresh: %f\n", onset, flux, thresh);
         

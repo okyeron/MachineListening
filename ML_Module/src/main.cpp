@@ -124,7 +124,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
                 
                 //Update threshold
-                onsetThreshold = 10 * communicator->getADCValue(1);
+                onsetThreshold = 25 * communicator->getADCValue(1);
             } else{
                 volume = 0.6;
                 minBin = 0;
