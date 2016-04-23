@@ -76,7 +76,7 @@ void SpectralFeatures::setFilterParams(int minBin, int maxBin){
     this->minBin = minBin;
     this->maxBin = maxBin;
     
-    //printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
+    printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
 }
 
 int SpectralFeatures::getBinSize(){

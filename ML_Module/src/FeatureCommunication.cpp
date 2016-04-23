@@ -43,10 +43,10 @@ FeatureCommunication::FeatureCommunication(){
         
         // GPIO Digital Output
         pinMode(16, OUTPUT); //Spectral Feature output
-        softPwmCreate(16,0,256);
+        //softPwmCreate(16,0,256);
         
         pinMode(26, OUTPUT); //Onset Trigger output
-        softPwmCreate(26,0,256);
+        //softPwmCreate(26,0,256);
     
         // Switches
         pinMode(23, INPUT); //Switch 1

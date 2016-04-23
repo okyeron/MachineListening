@@ -146,6 +146,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             onset = features->getOnset(onsetThreshold, interOnsetInterval);
             if(onset){
                 communicator->writeGPIO(26,1,0);
+                communicator->writeGPIO(16,1,0);
             }
             
             /***  Check which feature to output ***/
@@ -184,7 +185,10 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 if(ms.count() >= 10){
                     synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
                     t_commTime = Clock::now();
-                    communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
+                    
+                    // Map RMS to DC voltage
+                    printf("RMS: %f, Rolloff: %f, Crest: %f, \n",features->getRMS(), features->getSpectralRolloff(), features->getSpectralCrest());
+                    //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
                 }
                 
             } else if(activeFeature == 1){
@@ -202,7 +206,6 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, flatness);
             }
             
-            // Map RMS to DC voltage
             
         } else{
             gNumNoInputs += 1;
