@@ -28,8 +28,6 @@ void SpectralFeatures::init (int numBins, int fs) {
     fifo = initArray(fifo, binSize);
     
     t_threshTime = Clock::now();
-    delayTime = 0.01;
-    thresh = 0.7;
     
     minThresh = 1e-20;
     minBin = 0;
@@ -63,7 +61,7 @@ void SpectralFeatures::setFilterParams(int minBin, int maxBin){
         maxBin = binSize;
     }
     if(maxBin < 0){
-        maxBin = 0;
+        maxBin = 1;
     }
     if(minBin >= maxBin){
         minBin = maxBin -1;
@@ -76,7 +74,7 @@ void SpectralFeatures::setFilterParams(int minBin, int maxBin){
     this->minBin = minBin;
     this->maxBin = maxBin;
     
-    //printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
+    printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
 }
 
 int SpectralFeatures::getBinSize(){
@@ -193,7 +191,7 @@ float SpectralFeatures::getTimePassedSinceLastOnsetInMs(){
     return ms.count();
 }
 
-float SpectralFeatures::getOnset(float threshold, float interOnsetinterval){
+float SpectralFeatures::getOnset(float thresh, float interOnsetinterval){
 
     // Reset onset and clock
     onset = 0;

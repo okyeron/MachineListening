@@ -59,12 +59,9 @@ protected:
     float centroid;
     float prevCentroid;
     float rms;
-    float delayTime; //Delay in MS
     
     Clock::time_point t_threshTime;
     
-    
-    float thresh;
     int onset;
     Clock::time_point timeCompare;
     milliseconds ms;
