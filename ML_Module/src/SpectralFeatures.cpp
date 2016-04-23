@@ -141,7 +141,12 @@ void SpectralFeatures::extractFeatures(float* spectrum)
 }
 
 void SpectralFeatures::calculateRMS(float power, int minBin, int maxBin){
-    rms = sqrtf((1/(float)(maxBin-minBin)) * power);
+    try {
+        rms = sqrtf((1/(float)(maxBin-minBin)) * power);
+    } catch (std::logic_error e) {
+        rms = 0.0;
+        return;
+    }
 }
 
 void SpectralFeatures::calculateSpectralFlux(float halfwave)
