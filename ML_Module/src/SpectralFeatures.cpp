@@ -163,7 +163,13 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     for (int i=0; i<binSize; i++) {
         centroid += i*spectrum[i];
     }
-    centroid = centroid / spectrum_sum;
+    
+    try {
+        centroid = centroid / spectrum_sum;
+    } catch (std::logic_error e) {
+        centroid = 0.0;
+        return;
+    }
     
     // Convert centroid from bin index to frequency
     centroid = (centroid / (float) binSize) * (sampleRate / 2);
@@ -177,12 +183,22 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
 }
 
 void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_abs_sum){
-    crest = max_abs_array(spectrum, binSize) / spectrum_abs_sum;
+    try {
+        crest = max_abs_array(spectrum, binSize) / spectrum_abs_sum;
+    } catch (std::logic_error e) {
+        crest = 0.0;
+        return;
+    }
 }
 
 void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum) {
-    if((spectrum_sum / binSize) > minThresh)
-        flatness = exp(log_spectrum_sum / (float) binSize) / (spectrum_sum / (float) binSize);
+    if((spectrum_sum / binSize) > minThresh){
+        try {
+            flatness = exp(log_spectrum_sum / (float) binSize) / (spectrum_sum / (float) binSize);
+        } catch (std::logic_error e) {
+            return;
+        }
+    }
     else
         flatness = 0.0;
 }
