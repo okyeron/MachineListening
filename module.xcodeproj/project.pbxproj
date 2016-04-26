@@ -43,7 +43,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A43D00C61CC6FBB9009B4DB8 /* module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = module; path = /Users/chrislatina/Documents/Sites/MachineListening/build/Debug/module; sourceTree = "<absolute>"; };
 		A43D00CF1CC7CA3C009B4DB8 /* AudioFileIf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioFileIf.h; sourceTree = "<group>"; };
 		A43D00D01CC7CA3C009B4DB8 /* ErrorDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorDef.h; sourceTree = "<group>"; };
 		A43D00D11CC7CA3C009B4DB8 /* Lfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lfo.h; sourceTree = "<group>"; };
@@ -72,6 +71,7 @@
 		A4B94D041C04F88600B49869 /* libportaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libportaudio.a; sourceTree = "<group>"; };
 		A4B94D051C04F88600B49869 /* pa_linux_alsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pa_linux_alsa.h; sourceTree = "<group>"; };
 		A4B94D061C04F88600B49869 /* portaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = portaudio.h; sourceTree = "<group>"; };
+		A4BCFCD01CCDDA9B004D9362 /* module */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = module; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +108,7 @@
 				A4B94CF11C04F74300B49869 /* CoreServices.framework */,
 				A4B944421C04E08000B49869 /* ML_Module */,
 				A46B8F8D1C9DB83300EF903F /* ML_Module */,
+				A4BCFCD01CCDDA9B004D9362 /* module */,
 			);
 			sourceTree = "<group>";
 		};
@@ -189,7 +190,7 @@
 			);
 			name = module;
 			productName = module;
-			productReference = A43D00C61CC6FBB9009B4DB8 /* module */;
+			productReference = A4BCFCD01CCDDA9B004D9362 /* module */;
 			productType = "com.apple.product-type.tool";
 		};
 		A4B944401C04E08000B49869 /* ML_Module */ = {

@@ -74,7 +74,7 @@ void SpectralFeatures::setFilterParams(int minBin, int maxBin){
     this->minBin = minBin;
     this->maxBin = maxBin;
     
-    printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
+    //printf("minBin: %i, maxBin: %i\n", minBin, maxBin);
 }
 
 int SpectralFeatures::getBinSize(){
@@ -152,7 +152,7 @@ void SpectralFeatures::calculateRMS(float power, int minBin, int maxBin){
 
 void SpectralFeatures::calculateSpectralFlux(float halfwave){
     //Calculate Spectral Flux
-    flux = halfwave / (getFilteredBinSize());
+    flux = halfwave / (float) binSize;
     
     // Low pass filter
     float alpha = 0.1;
@@ -175,7 +175,7 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
     }
     
     // Convert centroid from bin index to frequency
-    centroid = (centroid / (float) getFilteredBinSize()) * (sampleRate / 2);
+    centroid = (centroid / (float) binSize) * (sampleRate / 2);
     
     // Low pass filter
     float alpha = 0.5;
@@ -192,7 +192,7 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
 void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_abs_sum){
     crest = 0.0;
     try {
-        crest = max_abs_array(spectrum, getFilteredBinSize()) / spectrum_abs_sum;
+        crest = max_abs_array(spectrum, (float)  binSize) / spectrum_abs_sum;
     } catch (std::logic_error e) {
         crest = 0.0;
         return;
@@ -200,9 +200,9 @@ void SpectralFeatures::calculateSpectralCrest(float* spectrum, float spectrum_ab
 }
 
 void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum) {
-    if((spectrum_sum / getFilteredBinSize()) > minThresh){
+    if((spectrum_sum / (float) binSize) > minThresh){
         try {
-            flatness = exp(log_spectrum_sum / (float) getFilteredBinSize()) / (spectrum_sum / (float) getFilteredBinSize());
+            flatness = exp(log_spectrum_sum / (float) binSize) / (spectrum_sum / (float) binSize);
         } catch (std::logic_error e) {
             flatness = 0.0;
             return;
