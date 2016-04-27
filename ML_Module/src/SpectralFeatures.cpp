@@ -29,6 +29,16 @@ void SpectralFeatures::init (int numBins, int fs) {
     
     t_threshTime = Clock::now();
     
+    // Initialize Features to zero
+    flux = 0;
+    prevFlux = 0;
+    crest = 0;
+    flatness = 0;
+    rolloff = 0;
+    centroid = 0;
+    prevCentroid = 0;
+    rms = 0;
+    
     minThresh = 1e-20;
     minBin = 0;
     maxBin = binSize;
@@ -121,13 +131,15 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     /* Update fifo */
     setFifo(spectrum,binSize);
     
-    /* Calculate Spectral Flux */
-    calculateSpectralFlux(halfwave);
-    
-    if (spectrum_sum > 0.001){
+    if (!checkSilence(power)){
+        // Calculate Spectral Flux
+        calculateSpectralFlux(halfwave);
+        
+        // Calculate Spectral Roloff
+        calculateSpectralRolloff(spectrum, spectrum_sum, 0.8);
         
         //Calculate RMS
-        calculateRMS(power, minBin, maxBin);
+        calculateRMS(power);
         
         //Calculate Spectral Crest
         calculateSpectralCrest(spectrum, spectrum_abs_sum);
@@ -141,9 +153,17 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     }
 }
 
-void SpectralFeatures::calculateRMS(float power, int minBin, int maxBin){
+bool SpectralFeatures::checkSilence(float power) {
+    if (power < 0.000001) {
+        return true; //return false if Silence is detected
+    }
+    return false;
+}
+
+
+void SpectralFeatures::calculateRMS(float power){
     try {
-        rms = sqrtf((1/(float)(maxBin-minBin)) * power);
+        rms = sqrtf((1/(float)(binSize) * power));
     } catch (std::logic_error e) {
         rms = 0.0;
         return;
@@ -174,17 +194,11 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum
         centroid = 0.0;
     }
     
-    // Convert centroid from bin index to frequency
-    centroid = (centroid / (float) binSize) * (sampleRate / 2);
+    centroid = (centroid / (float) binSize);
     
     // Low pass filter
-    float alpha = 0.5;
+    float alpha = 0.2;
     centroid = (1-alpha)*centroid + alpha * prevCentroid;
-    
-    //Make sure centroid doesn't exceed human hearing / nyquist. 
-    if(centroid > 20000){
-        centroid = 20000.0;
-    }
     
     prevCentroid = centroid;
 }
@@ -211,6 +225,21 @@ void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float s
     else{
         flatness = 0.0;
     }
+}
+
+void SpectralFeatures::calculateSpectralRolloff(float* spectrum, float spectrum_sum, float roloff_percentage){
+    
+    float threshold = roloff_percentage*spectrum_sum;
+    int i; float cumSum = 0;
+    for (i=0; i<binSize; i++) {
+        cumSum +=spectrum[i];
+        if (cumSum > threshold) {
+            break;
+        }
+    }
+    
+    //Normalize
+    rolloff = (float) i/binSize;
 }
 
 float SpectralFeatures::getTimePassedSinceLastOnsetInMs(){

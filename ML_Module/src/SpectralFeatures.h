@@ -41,11 +41,13 @@ public:
     
 protected:
     void reset();
-    void calculateRMS(float power, int minBin, int maxBin);
+    void calculateRMS(float power);
     void calculateSpectralFlux(float halfwave);
     void calculateSpectralCentroid(float* spectrum, float spectrum_sum, int minBin, int maxBin);
     void calculateSpectralCrest(float* spectrum, float spectrum_abs_sum);
     void calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum);
+    void calculateSpectralRolloff(float* spectrum, float spectrum_sum, float roloff_percentage);
+    bool checkSilence(float power);
     
     /* Feature variables */
     int binSize;

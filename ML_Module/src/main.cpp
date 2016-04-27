@@ -60,6 +60,7 @@ float flatness = 0.0;
 int minBin;
 int maxBin;
 float volume = 0.0;
+float volume2 = 0.0;
 float onsetThreshold;
 float interOnsetInterval;
 int activeFeature;
@@ -108,6 +109,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 
                 // Get volume
                 volume = communicator->getADCValue(4);
+                volume2 = communicator->getADCValue(5);
                 
                 //Update minBin and maxBin
                 // Manual scaling for voltage offset
@@ -122,6 +124,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 onsetThreshold = 8 * communicator->getADCValue(1);
             } else{
                 volume = 0.6;
+                volume2 = 0.6;
                 minBin = 0;
                 maxBin = features->getBinSize();
                 onsetThreshold = 0.7;
@@ -205,7 +208,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         for( i=0; i<framesPerBuffer; i++ )
         {
             *out++ = volume * *in++;     /* left  - clean */
-            *out++ = 1.0 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
+            *out++ = volume2 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
         }
     }
     return paContinue;
