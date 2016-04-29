@@ -27,8 +27,6 @@ void SpectralFeatures::init (int numBins, int fs) {
     fifo = new float[binSize];
     initArray(fifo, binSize);
     fifoFilled = false;
-    diff = new float[binSize];
-    initArray(diff, binSize);
     
     
     t_threshTime = Clock::now();
@@ -108,18 +106,11 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     spectrum_abs_sum = 0.0;
     halfwave = 0.0;
     log_spectrum_sum = 0.0;
-    initArray(diff, binSize);
     float diff_sum = 0.0;
     
     for (int i=minBin; i<maxBin; i++) {
-        // Get difference between consecutive spectra
-        if(!fifoFilled) //Make the first diff equal to zero
-            diff[i] = 0;
-        else {
-            // Calculate the difference between the current block and the previous block's spectrum
-            diff[i] = spectrum[i] - fifo[i];
-        }
-        diff_sum += diff[i];
+        // Get power difference between consecutive spectra
+        diff_sum += (spectrum[i] - fifo[i])*(spectrum[i] - fifo[i]);
         
         // Half wave recitify the diff.
         halfwave += (spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0;
@@ -183,11 +174,11 @@ void SpectralFeatures::calculateRMS(float power){
 
 void SpectralFeatures::calculateSpectralFlux(float diff_sum){
     //Calculate Spectral Flux
-    flux = sqrtf(diff_sum*diff_sum) / (float)(binSize);
+    flux = sqrtf(diff_sum) / (float)(binSize);
     
     // Low pass filter
     float alpha = 0.1;
-    flux = (1-alpha)*flux + alpha * prevFlux;
+    //flux = (1-alpha)*flux + alpha * prevFlux;
     
     /* Save previous Spectral Flux */
     prevFlux = flux;
@@ -205,11 +196,11 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float power, i
         centroid = 0.0;
     }
     
-    // Convert centroid to frequency
     centroid = (centroid / (float) binSize);
+    centroid = centroid * sampleRate / 2;
     
     // Low pass filter
-    float alpha = 0.9;
+    float alpha = 0.0;
     centroid = (1-alpha)*centroid + alpha * prevCentroid;
     
     prevCentroid = centroid;
@@ -251,7 +242,7 @@ void SpectralFeatures::calculateSpectralRolloff(float* spectrum, float spectrum_
     }
     
     //Normalize
-    rolloff = (float) i/binSize;
+    rolloff = (float) i/binSize * sampleRate/2;
 }
 
 float SpectralFeatures::getTimePassedSinceLastOnsetInMs(){
@@ -289,7 +280,6 @@ float SpectralFeatures::getSpectralFlatness(){
 float SpectralFeatures::getSpectralRolloff(){
     return rolloff;
 }
-
 
 float SpectralFeatures::getSpectralRolloffInFreq(){
     return rolloff * sampleRate / 2;

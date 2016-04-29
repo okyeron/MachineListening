@@ -114,8 +114,12 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             if(communicator->checkIfValid(communicator->getADCValue(0))){
                 
                 // Get volume
-                volume  = communicator->getADCValue(5);
-                volume2 = communicator->getADCValue(4);
+                volume  = (communicator->getADCValue(5) - 0.07) / 2.f;
+                if(volume < 0)
+                    volume = 0;
+                volume2 = (communicator->getADCValue(4) - 0.07) / 2.f;
+                if(volume2 < 0)
+                    volume2 = 0;
                 
                 //Update minBin and maxBin
                 // Manual scaling for voltage offset
@@ -127,7 +131,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
                 
                 //Update threshold
-                onsetThreshold = 10 * communicator->getADCValue(1)*communicator->getADCValue(1);
+                onsetThreshold = 6 * communicator->getADCValue(1)*communicator->getADCValue(1);
             } else { //Set defaults
                 volume = 0.6;
                 volume2 = 0.6;
@@ -167,7 +171,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             if(activeFeature == 0){
                 // Map Spectral Centroid and Rolloff to a sine wave
-                centroid = features->getSpectralRolloffInFreq();
+                centroid = features->getSpectralCentroidInFreq();
                 //printf("Centroid: %f \n", centroid);
                 
                 // Map RMS to DC voltage
@@ -209,7 +213,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         for( i=0; i<framesPerBuffer; i++ )
         {
             *out++ = volume * *in++;     /* left  - clean */
-            *out++ = volume2 * 0.5* synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
+            *out++ = volume2 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
         }
     }
     return paContinue;
