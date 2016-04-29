@@ -251,7 +251,7 @@ void SpectralFeatures::calculateSpectralRolloff(float* spectrum, float spectrum_
     }
     
     //Normalize
-    rolloff = (float) i/binSize * sampleRate/2;
+    rolloff = (float) i/binSize;
 }
 
 float SpectralFeatures::getTimePassedSinceLastOnsetInMs(){
@@ -288,6 +288,11 @@ float SpectralFeatures::getSpectralFlatness(){
 
 float SpectralFeatures::getSpectralRolloff(){
     return rolloff;
+}
+
+
+float SpectralFeatures::getSpectralRolloffInFreq(){
+    return rolloff * sampleRate / 2;
 }
 
 float SpectralFeatures::getSpectralCentroid(){

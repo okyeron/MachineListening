@@ -35,6 +35,7 @@ public:
     float getSpectralFlatness();
     float getSpectralFlux();
     float getSpectralRolloff();
+    float getSpectralRolloffInFreq();
     float getSpectralCentroid();
     float getSpectralCentroidInFreq();
     float getRMS();

@@ -86,8 +86,14 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     (void) statusFlags;
     (void) userData;
     
-    /* Initialize features to zero */
+    SAMPLE* scaledIn = new SAMPLE[framesPerBuffer];
     
+    //Reduce volume
+    for (int s = 0; s < framesPerBuffer; s++){
+        scaledIn[s] = 0.9*in[s];
+    }
+    
+    /* Initialize features to zero */
     if( inputBuffer == NULL)
     {
         for( i=0; i<framesPerBuffer; i++ )
@@ -99,7 +105,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     }
     else if(in != NULL)
     {
-        spectrum = fft->getSpectrum(in);
+        spectrum = fft->getSpectrum(scaledIn);
         if(!isnan(*spectrum) && *spectrum != INFINITY)
         {
             /*** Get Parameters From Hardware ***/
@@ -108,8 +114,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             if(communicator->checkIfValid(communicator->getADCValue(0))){
                 
                 // Get volume
-                volume = communicator->getADCValue(4);
-                volume2 = communicator->getADCValue(5);
+                volume  = communicator->getADCValue(5);
+                volume2 = communicator->getADCValue(4);
                 
                 //Update minBin and maxBin
                 // Manual scaling for voltage offset
@@ -121,8 +127,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
                 
                 //Update threshold
-                onsetThreshold = 8 * communicator->getADCValue(1);
-            } else{
+                onsetThreshold = 10 * communicator->getADCValue(1)*communicator->getADCValue(1);
+            } else { //Set defaults
                 volume = 0.6;
                 volume2 = 0.6;
                 minBin = 0;
@@ -139,17 +145,13 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 communicator->writeGPIO(26,0,0);
             }
             
-            /*** Extract Features ***/
-            
-            // Extract Spectral features for the block
+            /*** Extract Spectral Features for the block ***/
             features->extractFeatures(spectrum);
             
-            //printf("Thresh: %f \n", onsetThreshold);
             // Get the onset
             onset = features->getOnset(onsetThreshold, interOnsetInterval);
             if(onset){
                 communicator->writeGPIO(26,1,0);
-                communicator->writeGPIO(16,1,0);
             }
             
             /***  Check which feature to output ***/
@@ -165,7 +167,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             if(activeFeature == 0){
                 // Map Spectral Centroid and Rolloff to a sine wave
-                centroid = features->getSpectralCentroidInFreq();
+                centroid = features->getSpectralRolloffInFreq();
                 //printf("Centroid: %f \n", centroid);
                 
                 // Map RMS to DC voltage
@@ -183,20 +185,18 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                     synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
                     t_commTime = Clock::now();
 
-                    //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
+                    communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
                 //}
                 
             } else if(activeFeature == 1){
                 // Map Spectral Flatness to White noise
                 flatness = features->getSpectralFlatness();
-                
                 //printf("Spectral Flatness: %f \n", flatness);
                 
-                // ***TODO***: Make sure flatness is between 0 and 1.0
                 if(flatness > 1.0){
                     flatness = 1.0;
                 }
-                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 440);
+                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 880);
                 synthesizer->setLfoType(CLfo::LfoType_t::kNoise);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, flatness);
             }
@@ -209,7 +209,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         for( i=0; i<framesPerBuffer; i++ )
         {
             *out++ = volume * *in++;     /* left  - clean */
-            *out++ = volume2 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
+            *out++ = volume2 * 0.5* synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
         }
     }
     return paContinue;
