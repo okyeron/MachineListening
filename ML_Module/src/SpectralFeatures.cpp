@@ -176,8 +176,8 @@ void SpectralFeatures::calculateSpectralFlux(float diff_sum){
     //Calculate Spectral Flux
     flux = sqrtf(diff_sum) / (float)(binSize);
     
-    // Low pass filter
-    float alpha = 0.1;
+    // Low pass filter (optional)
+    //float alpha = 0.1;
     //flux = (1-alpha)*flux + alpha * prevFlux;
     
     /* Save previous Spectral Flux */
@@ -197,7 +197,7 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float power, i
     }
     
     centroid = (centroid / (float) binSize);
-    centroid = centroid * sampleRate / 2;
+    centroid = centroid;
     
     // Low pass filter
     float alpha = 0.0;
@@ -242,7 +242,7 @@ void SpectralFeatures::calculateSpectralRolloff(float* spectrum, float spectrum_
     }
     
     //Normalize
-    rolloff = (float) i/binSize * sampleRate/2;
+    rolloff = (float) i/binSize;
 }
 
 float SpectralFeatures::getTimePassedSinceLastOnsetInMs(){

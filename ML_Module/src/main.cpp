@@ -86,13 +86,12 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     (void) statusFlags;
     (void) userData;
     
-    SAMPLE* scaledIn = new SAMPLE[framesPerBuffer];
-    
     //Reduce volume
-    for (int s = 0; s < framesPerBuffer; s++){
-        scaledIn[s] = 0.9*in[s];
-    }
-    
+//    SAMPLE* scaledIn = new SAMPLE[framesPerBuffer];
+//    for (int s = 0; s < framesPerBuffer; s++){
+//        scaledIn[s] = 0.9*in[s];
+//    }
+
     /* Initialize features to zero */
     if( inputBuffer == NULL)
     {
@@ -105,7 +104,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     }
     else if(in != NULL)
     {
-        spectrum = fft->getSpectrum(scaledIn);
+        spectrum = fft->getSpectrum(in);
         if(!isnan(*spectrum) && *spectrum != INFINITY)
         {
             /*** Get Parameters From Hardware ***/
@@ -114,10 +113,10 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             if(communicator->checkIfValid(communicator->getADCValue(0))){
                 
                 // Get volume
-                volume  = (communicator->getADCValue(5) - 0.07) / 2.f;
+                volume  = (communicator->getADCValue(5) - 0.07) / 2.0;
                 if(volume < 0)
                     volume = 0;
-                volume2 = (communicator->getADCValue(4) - 0.07) / 2.f;
+                volume2 = (communicator->getADCValue(4) - 0.07) / 2.0;
                 if(volume2 < 0)
                     volume2 = 0;
                 
