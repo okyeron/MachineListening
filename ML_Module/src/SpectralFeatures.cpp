@@ -25,7 +25,11 @@ void SpectralFeatures::init (int numBins, int fs) {
     prevFlux = 0.0;
     prevCentroid = 0.0;
     fifo = new float[binSize];
-    fifo = initArray(fifo, binSize);
+    initArray(fifo, binSize);
+    fifoFilled = false;
+    diff = new float[binSize];
+    initArray(diff, binSize);
+    
     
     t_threshTime = Clock::now();
     
@@ -96,7 +100,7 @@ int SpectralFeatures::getFilteredBinSize(){
 }
 
 /*  Method to extract spectral features.
-    Input arguments are the magnitude spectrum and block size */
+ Input arguments are the magnitude spectrum and block size */
 void SpectralFeatures::extractFeatures(float* spectrum)
 {
     power = 0.0;
@@ -104,13 +108,21 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     spectrum_abs_sum = 0.0;
     halfwave = 0.0;
     log_spectrum_sum = 0.0;
+    initArray(diff, binSize);
+    float diff_sum = 0.0;
     
     for (int i=minBin; i<maxBin; i++) {
-        // Calculate the difference between the current block and the previous block's spectrum
-        float diff = spectrum[i] - fifo[i];
+        // Get difference between consecutive spectra
+        if(!fifoFilled) //Make the first diff equal to zero
+            diff[i] = 0;
+        else {
+            // Calculate the difference between the current block and the previous block's spectrum
+            diff[i] = spectrum[i] - fifo[i];
+        }
+        diff_sum += diff[i];
         
         // Half wave recitify the diff.
-        halfwave += (diff + fabsf(diff))/2.0;
+        halfwave += (spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0;
         
         //Calculate the square
         power += spectrum[i] * spectrum[i];
@@ -133,10 +145,10 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     
     if (!checkSilence(power)){
         // Calculate Spectral Flux
-        calculateSpectralFlux(halfwave);
+        calculateSpectralFlux(diff_sum);
         
         // Calculate Spectral Roloff
-        calculateSpectralRolloff(spectrum, spectrum_sum, 0.8);
+        calculateSpectralRolloff(spectrum, spectrum_sum, 0.85);
         
         //Calculate RMS
         calculateRMS(power);
@@ -145,7 +157,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
         calculateSpectralCrest(spectrum, spectrum_abs_sum);
         
         //Calculate Spectral Centroid
-        calculateSpectralCentroid(spectrum, spectrum_sum, minBin, maxBin);
+        calculateSpectralCentroid(spectrum, power, minBin, maxBin);
         
         //Calculate Spectral Flatness
         calculateSpectralFlatness(log_spectrum_sum, spectrum_sum);
@@ -163,16 +175,15 @@ bool SpectralFeatures::checkSilence(float power) {
 
 void SpectralFeatures::calculateRMS(float power){
     try {
-        rms = sqrtf((1/(float)(binSize) * power));
+        rms = sqrtf(power / (float)(binSize*binSize));
     } catch (std::logic_error e) {
         rms = 0.0;
-        return;
     }
 }
 
-void SpectralFeatures::calculateSpectralFlux(float halfwave){
+void SpectralFeatures::calculateSpectralFlux(float diff_sum){
     //Calculate Spectral Flux
-    flux = halfwave / (float) binSize;
+    flux = sqrtf(diff_sum*diff_sum) / (float)(binSize);
     
     // Low pass filter
     float alpha = 0.1;
@@ -182,22 +193,23 @@ void SpectralFeatures::calculateSpectralFlux(float halfwave){
     prevFlux = flux;
 }
 
-void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float spectrum_sum, int minBin, int maxBin){
+void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float power, int minBin, int maxBin){
     centroid = 0.0;
     for (int i=minBin; i<maxBin; i++) {
-        centroid += i*spectrum[i];
+        centroid += i*spectrum[i]*spectrum[i];
     }
     
     try {
-        centroid = centroid / spectrum_sum;
+        centroid = centroid / (power);
     } catch (std::logic_error e) {
         centroid = 0.0;
     }
     
+    // Convert centroid to frequency
     centroid = (centroid / (float) binSize);
     
     // Low pass filter
-    float alpha = 0.2;
+    float alpha = 0.9;
     centroid = (1-alpha)*centroid + alpha * prevCentroid;
     
     prevCentroid = centroid;
@@ -239,7 +251,7 @@ void SpectralFeatures::calculateSpectralRolloff(float* spectrum, float spectrum_
     }
     
     //Normalize
-    rolloff = (float) i/binSize;
+    rolloff = (float) i/binSize * sampleRate/2;
 }
 
 float SpectralFeatures::getTimePassedSinceLastOnsetInMs(){
@@ -247,7 +259,7 @@ float SpectralFeatures::getTimePassedSinceLastOnsetInMs(){
 }
 
 float SpectralFeatures::getOnset(float thresh, float interOnsetinterval){
-
+    
     // Reset onset and clock
     onset = 0;
     timeCompare = Clock::now();
@@ -282,6 +294,21 @@ float SpectralFeatures::getSpectralCentroid(){
     return centroid;
 }
 
+float SpectralFeatures::getSpectralCentroidInFreq(){
+    return centroid * sampleRate / 2;
+}
+
+float SpectralFeatures::getSpectralFlux(){
+    return flux;
+}
+
 float SpectralFeatures::getRMS(){
     return rms;
+}
+
+float SpectralFeatures::getRMSInDb(){
+    float rmsdB = rms;
+    if(rmsdB < 1e-5)
+        rmsdB = 1e-5; // -100dB
+    return 20*log10(rmsdB);
 }

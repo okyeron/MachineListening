@@ -165,9 +165,12 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             
             if(activeFeature == 0){
                 // Map Spectral Centroid and Rolloff to a sine wave
-                centroid = features->getSpectralCentroid();
-                
+                centroid = features->getSpectralCentroidInFreq();
                 //printf("Centroid: %f \n", centroid);
+                
+                // Map RMS to DC voltage
+                //printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
+                
                 synthesizer->setLfoType(CLfo::LfoType_t::kSine);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
                 
@@ -179,9 +182,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 //if(ms.count() >= 10){
                     synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
                     t_commTime = Clock::now();
-                    
-                    // Map RMS to DC voltage
-                    //printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
+
                     //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
                 //}
                 

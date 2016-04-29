@@ -33,64 +33,14 @@ public:
     float getOnset(float threshold, float interOnsetinterval);
     float getSpectralCrest();
     float getSpectralFlatness();
+    float getSpectralFlux();
     float getSpectralRolloff();
     float getSpectralCentroid();
+    float getSpectralCentroidInFreq();
     float getRMS();
+    float getRMSInDb();
     int getBinSize();
     void setFilterParams(int minBin, int maxBin);
-    
-protected:
-    void reset();
-    void calculateRMS(float power);
-    void calculateSpectralFlux(float halfwave);
-    void calculateSpectralCentroid(float* spectrum, float spectrum_sum, int minBin, int maxBin);
-    void calculateSpectralCrest(float* spectrum, float spectrum_abs_sum);
-    void calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum);
-    void calculateSpectralRolloff(float* spectrum, float spectrum_sum, float roloff_percentage);
-    bool checkSilence(float power);
-    
-    /* Feature variables */
-    int binSize;
-    int sampleRate;
-    float *fifo;
-    float flux;
-    float prevFlux;
-    float crest;
-    float flatness;
-    float rolloff;
-    float centroid;
-    float prevCentroid;
-    float rms;
-    
-    Clock::time_point t_threshTime;
-    
-    int onset;
-    Clock::time_point timeCompare;
-    milliseconds ms;
-    
-    float power;
-    float *spectrum_sq;
-    float spectrum_sum;
-    float log_spectrum_sum;
-    float spectrum_abs_sum;
-    float halfwave;
-
-private:
-    float minThresh;
-    
-    int minBin;
-    int maxBin;
-    
-    int getFilteredBinSize();
-    
-    float* initArray(float* array, int signalSize){
-        for (int i=0; i<signalSize; i++)
-        {
-            array[i] = 0.0;
-        }
-        
-        return array;
-    }
     
     float max_abs_array(float a[], float num_elements)
     {
@@ -104,6 +54,59 @@ private:
             }
         }
         return(max);
+    }
+    
+protected:
+    void reset();
+    void calculateRMS(float power);
+    void calculateSpectralFlux(float diff_sum);
+    void calculateSpectralCentroid(float* spectrum, float power, int minBin, int maxBin);
+    void calculateSpectralCrest(float* spectrum, float spectrum_abs_sum);
+    void calculateSpectralFlatness(float log_spectrum_sum, float spectrum_sum);
+    void calculateSpectralRolloff(float* spectrum, float spectrum_sum, float roloff_percentage);
+    bool checkSilence(float power);
+    
+    /* Feature variables */
+    int binSize;
+    int sampleRate;
+    float *fifo;
+    float *diff;
+    float flux;
+    float prevFlux;
+    float crest;
+    float flatness;
+    float rolloff;
+    float centroid;
+    float prevCentroid;
+    float rms;
+    bool  fifoFilled;
+    
+    Clock::time_point t_threshTime;
+    
+    int onset;
+    Clock::time_point timeCompare;
+    milliseconds ms;
+    
+    float power;
+    float *spectrum_sq;
+    float spectrum_sum;
+    float log_spectrum_sum;
+    float spectrum_abs_sum;
+    float halfwave;
+    
+private:
+    float minThresh;
+    
+    int minBin;
+    int maxBin;
+    
+    int getFilteredBinSize();
+    
+    void initArray(float* array, int signalSize){
+        for (int i=0; i<signalSize; i++)
+        {
+            array[i] = 0.0;
+        }
     }
     
     float* log_array(float a[], float num_elements)
@@ -127,6 +130,7 @@ private:
     }
     
     void setFifo(float* array, int signalSize){
+        fifoFilled = true;
         for (int i=0; i<signalSize; i++)
         {
             fifo[i] = array[i];
