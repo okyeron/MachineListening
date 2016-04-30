@@ -130,13 +130,13 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
                 
                 //Update threshold
-                onsetThreshold = 6 * communicator->getADCValue(1)*communicator->getADCValue(1);
+                onsetThreshold = (communicator->getADCValue(1) - 0.05);
             } else { //Set defaults
                 volume = 0.6;
                 volume2 = 0.6;
                 minBin = 0;
                 maxBin = features->getBinSize();
-                onsetThreshold = 0.7;
+                onsetThreshold = 0.25;
                 interOnsetInterval = 0.01;
             }
             
@@ -244,7 +244,7 @@ int main(void)
 
     if(numDevices > 1){
         // Set input to USB -- device 1 -- for testing on OSX, switch to 0
-        inputParameters.device = 1;
+        inputParameters.device = 2;
     } else {
         inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
     }
@@ -259,8 +259,8 @@ int main(void)
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
     
-    //outputParameters.device = 1;
-    outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
+    outputParameters.device = 1;
+    //outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
     if (outputParameters.device == paNoDevice) {
         fprintf(stderr,"Error: No default output device.\n");
         goto error;

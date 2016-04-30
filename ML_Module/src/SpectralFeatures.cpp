@@ -110,10 +110,11 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     
     for (int i=minBin; i<maxBin; i++) {
         // Get power difference between consecutive spectra
-        diff_sum += (spectrum[i] - fifo[i])*(spectrum[i] - fifo[i]);
+        //diff_sum += (spectrum[i] - fifo[i])*(spectrum[i] - fifo[i]);
+        diff_sum  += ((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0)*((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0);
         
         // Half wave recitify the diff.
-        halfwave += (spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0;
+        halfwave += ((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0)*((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0);
         
         //Calculate the square
         power += spectrum[i] * spectrum[i];
@@ -177,8 +178,8 @@ void SpectralFeatures::calculateSpectralFlux(float diff_sum){
     flux = sqrtf(diff_sum) / (float)(binSize);
     
     // Low pass filter (optional)
-    //float alpha = 0.1;
-    //flux = (1-alpha)*flux + alpha * prevFlux;
+    float alpha = 0.25;
+    flux = (1-alpha)*flux + alpha * prevFlux;
     
     /* Save previous Spectral Flux */
     prevFlux = flux;
