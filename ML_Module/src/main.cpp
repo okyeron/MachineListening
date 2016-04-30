@@ -244,7 +244,7 @@ int main(void)
 
     if(numDevices > 1){
         // Set input to USB -- device 1 -- for testing on OSX, switch to 0
-        inputParameters.device = 2;
+        inputParameters.device = 1;
     } else {
         inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
     }
@@ -259,8 +259,8 @@ int main(void)
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
     
-    outputParameters.device = 1;
-    //outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
+    //outputParameters.device = 1;
+    outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
     if (outputParameters.device == paNoDevice) {
         fprintf(stderr,"Error: No default output device.\n");
         goto error;
