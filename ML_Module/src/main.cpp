@@ -44,7 +44,7 @@ milliseconds ms;
 #define SAMPLE_RATE         44100
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   1024
-#define NUM_FEATURES        2
+#define NUM_FEATURES        3
 
 typedef float SAMPLE;
 FFT *fft;
@@ -176,7 +176,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 // Map RMS to DC voltage
                 //printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
                 
-                synthesizer->setLfoType(CLfo::LfoType_t::kDC);
+                synthesizer->setLfoType(CLfo::LfoType_t::kSine);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
                 
                 // Mapped to frequency and 1v / octave
@@ -185,7 +185,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_commTime);
                 
                 //if(ms.count() >= 10){
-                    synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 17000);
+                    synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
                     t_commTime = Clock::now();
                 
                     //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
@@ -201,6 +201,18 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 }
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 880);
                 synthesizer->setLfoType(CLfo::LfoType_t::kNoise);
+                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, flatness);
+                
+            } else if(activeFeature == 2){
+                // Map Spectral Flatness to DC
+                flatness = features->getSpectralFlatness();
+                //printf("Spectral Flatness: %f \n", flatness);
+                
+                if(flatness > 1.0){
+                    flatness = 1.0;
+                }
+                synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 18000);
+                synthesizer->setLfoType(CLfo::LfoType_t::kDC);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, flatness);
             }
             
