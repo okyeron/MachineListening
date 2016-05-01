@@ -176,7 +176,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 // Map RMS to DC voltage
                 //printf("RMS: %f, Crest: %f, \n", features->getRMS(), features->getSpectralCrest());
                 
-                synthesizer->setLfoType(CLfo::LfoType_t::kSine);
+                synthesizer->setLfoType(CLfo::LfoType_t::kDC);
                 synthesizer->setParam(CLfo::LfoParam_t::kLfoParamAmplitude, 1.0f);
                 
                 // Mapped to frequency and 1v / octave
@@ -185,10 +185,10 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 ms = std::chrono::duration_cast<milliseconds>(timeCompare - t_commTime);
                 
                 //if(ms.count() >= 10){
-                    synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
+                    synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, 17000);
                     t_commTime = Clock::now();
-
-                    communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
+                
+                    //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
                 //}
                 
             } else if(activeFeature == 1){

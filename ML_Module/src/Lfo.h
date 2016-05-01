@@ -35,6 +35,7 @@ public:
         kSaw,
         kRect,
         kNoise,
+        kDC,
 
         kNumLfoTypes
     };
@@ -88,6 +89,9 @@ private:
             break;
         case kNoise:
             CSynthesis::generateNoise(pfBuff,1.F*m_kiBufferLength, 1.F);
+            break;
+        case kDC:
+            CSynthesis::generateDc(pfBuff,1.F*m_kiBufferLength, 1.F);
             break;
         }
 

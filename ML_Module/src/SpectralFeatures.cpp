@@ -113,9 +113,8 @@ void SpectralFeatures::extractFeatures(float* spectrum)
         //diff_sum += (spectrum[i] - fifo[i])*(spectrum[i] - fifo[i]);
         diff_sum  += ((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0)*((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0);
         
-        // Half wave recitify the diff.
-        halfwave += ((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0)*((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0);
-        
+//        // Half wave recitify the diff.
+        halfwave += ((spectrum[i] - fifo[i] + fabsf(spectrum[i] - fifo[i]))/2.0);
         //Calculate the square
         power += spectrum[i] * spectrum[i];
         
@@ -137,7 +136,7 @@ void SpectralFeatures::extractFeatures(float* spectrum)
     
     if (!checkSilence(power)){
         // Calculate Spectral Flux
-        calculateSpectralFlux(diff_sum);
+        calculateSpectralFlux(halfwave);
         
         // Calculate Spectral Roloff
         calculateSpectralRolloff(spectrum, spectrum_sum, 0.85);
@@ -175,7 +174,7 @@ void SpectralFeatures::calculateRMS(float power){
 
 void SpectralFeatures::calculateSpectralFlux(float diff_sum){
     //Calculate Spectral Flux
-    flux = sqrtf(diff_sum) / (float)(binSize);
+    flux = diff_sum / (float)(binSize);
     
     // Low pass filter (optional)
     float alpha = 0.25;
