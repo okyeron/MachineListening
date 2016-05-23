@@ -76,6 +76,7 @@ protected:
     float prevFlux;
     float crest;
     float flatness;
+    float prevFlatness;
     float rolloff;
     float centroid;
     float prevCentroid;

@@ -24,6 +24,7 @@ void SpectralFeatures::init (int numBins, int fs) {
     sampleRate = fs;
     prevFlux = 0.0;
     prevCentroid = 0.0;
+    prevFlatness = 0.0;
     fifo = new float[binSize];
     initArray(fifo, binSize);
     fifoFilled = false;
@@ -177,7 +178,7 @@ void SpectralFeatures::calculateSpectralFlux(float diff_sum){
     flux = diff_sum / (float)(binSize);
     
     // Low pass filter (optional)
-    float alpha = 0.25;
+    float alpha = 0.0;
     flux = (1-alpha)*flux + alpha * prevFlux;
     
     /* Save previous Spectral Flux */
@@ -200,7 +201,7 @@ void SpectralFeatures::calculateSpectralCentroid(float* spectrum, float power, i
     centroid = centroid;
     
     // Low pass filter
-    float alpha = 0.0;
+    float alpha = 0.5;
     centroid = (1-alpha)*centroid + alpha * prevCentroid;
     
     prevCentroid = centroid;
@@ -228,6 +229,11 @@ void SpectralFeatures::calculateSpectralFlatness(float log_spectrum_sum, float s
     else{
         flatness = 0.0;
     }
+    
+    // Low pass filter
+    float alpha = 0.5;
+    flatness = (1-alpha)*flatness + alpha * flatness;
+    prevFlatness = flatness;
 }
 
 void SpectralFeatures::calculateSpectralRolloff(float* spectrum, float spectrum_sum, float roloff_percentage){

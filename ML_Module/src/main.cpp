@@ -188,7 +188,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                     synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
                     t_commTime = Clock::now();
                 
-                    //communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid) * 25.6), 1);
+                    communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid)), 1);
                 //}
                 
             } else if(activeFeature == 1){
