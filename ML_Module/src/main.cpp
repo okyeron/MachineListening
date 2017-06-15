@@ -44,7 +44,7 @@ milliseconds ms;
  ** full duplex audio (simultaneous record and playback).
  ** And some only support full duplex at lower sample rates.
  */
-#define SAMPLE_RATE         44100
+#define SAMPLE_RATE         48000
 #define PA_SAMPLE_TYPE      paFloat32
 #define FRAMES_PER_BUFFER   1024
 #define NUM_FEATURES        3
@@ -119,21 +119,21 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                 volume  = (communicator->getADCValue(5) - 0.07) / 2.0;
                 if(volume < 0)
                     volume = 0;
-                volume2 = (communicator->getADCValue(4) - 0.07) / 2.0;
+                volume2 = (communicator->getADCValue(2) - 0.07) / 2.0;
                 if(volume2 < 0)
                     volume2 = 0;
                 
                 //Update minBin and maxBin
                 // Manual scaling for voltage offset
-                minBin = (int) roundf((features->getBinSize() * (communicator->getADCValue(6)) - 34) * (512 / 462.0));
-                maxBin = (int) roundf(( features->getBinSize() * (communicator->getADCValue(7)) - 34) * (512 / 462.0));
+                minBin = (int) roundf((features->getBinSize() * (communicator->getADCValue(4)) - 34) * (512 / 462.0));
+                maxBin = (int) roundf(( features->getBinSize() * (communicator->getADCValue(1)) - 34) * (512 / 462.0));
                 
                 // Update inter-onset interval (in ms) 0 - 4.096 s
                 interOnsetInterval = communicator->getADCValue(0);
                 interOnsetInterval = (float) interOnsetInterval * communicator->getResolution() / 10.0;
                 
                 //Update threshold
-                onsetThreshold = (communicator->getADCValue(1) - 0.05);
+                onsetThreshold = (communicator->getADCValue(3) - 0.05);
             } else { //Set defaults
                 volume = 0.6;
                 volume2 = 0.6;
@@ -148,7 +148,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     
             // Set voltage to low if 10ms has passed
             if(features->getTimePassedSinceLastOnsetInMs() >= 10){
-                communicator->writeGPIO(26,0,0);
+                communicator->writeGPIO(12,0,0);
             }
             
             /*** Extract Spectral Features for the block ***/
@@ -157,7 +157,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             // Get the onset
             onset = features->getOnset(onsetThreshold, interOnsetInterval);
             if(onset){
-                communicator->writeGPIO(26,1,0);
+                communicator->writeGPIO(12,1,0);
             }
             
             /***  Check which feature to output ***/
@@ -244,9 +244,11 @@ int main(void)
     PaStreamParameters inputParameters, outputParameters;
     PaStream *stream;
     PaError err;
-    
+
     err = Pa_Initialize();
     if( err != paNoError ) goto error;
+
+//	printAllPins();   
 
     const   PaDeviceInfo *deviceInfo;
     numDevices  = Pa_GetDeviceCount();
@@ -255,11 +257,13 @@ int main(void)
     	deviceInfo = Pa_GetDeviceInfo( i );
 	printf("Device Info: %s, Host API: %d, SampleRate: %f\n",deviceInfo->name, deviceInfo->hostApi,
  deviceInfo->defaultSampleRate);
+	printf("Audio I/O: %d/%d\n",deviceInfo->maxInputChannels, deviceInfo->maxOutputChannels);
     }
 
     if(numDevices > 1){
         // Set input to USB -- device 1 -- for testing on OSX, switch to 0
-        inputParameters.device = 1;
+        // Terminal Tedium with wm8731 use  device 0
+        inputParameters.device = 0;
     } else {
         inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
     }
@@ -269,7 +273,9 @@ int main(void)
     }
     
     //This may need to be stereo if testing on OSX
-    inputParameters.channelCount = 1;       /* mono input */
+    //inputParameters.channelCount = 1;       /* mono input */
+    //Terminal Tedium with wm8731 setting to Stereo
+    inputParameters.channelCount = 2;       /* Stereo input */
     inputParameters.sampleFormat = PA_SAMPLE_TYPE;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;

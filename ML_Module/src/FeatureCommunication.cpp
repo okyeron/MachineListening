@@ -45,13 +45,13 @@ FeatureCommunication::FeatureCommunication(){
         pinMode(16, OUTPUT); //Spectral Feature output
         softPwmCreate(16,0,256);
         
-        pinMode(26, OUTPUT); //Onset Trigger output
-        //softPwmCreate(26,0,256);
+        pinMode(12, OUTPUT); //Onset Trigger output
+        //softPwmCreate(12,0,256);
     
         // Switches
         pinMode(23, INPUT); //Switch 1
-        pinMode(24, INPUT); //Switch 2
-        pinMode(25, INPUT); //Switch 3
+        pinMode(24, INPUT); //Switch 3 illum
+        pinMode(25, INPUT); //Switch 2
     #endif
 }
 
@@ -61,7 +61,7 @@ FeatureCommunication::~FeatureCommunication(){
 
 /* From Terminal Tedium */
 uint16_t adc[8] = {0, 0, 0, 0, 0, 0, 0, 0}; //  store prev.
-uint8_t  map_adc[8] = {5, 2, 7, 6, 3, 0, 1, 4}; // map to panel [1 - 2 - 3; 4 - 5 - 6; 7, 8]
+uint8_t  map_adc[8] = {5, 2, 4, 1, 3, 0, 6, 7}; // map to panel [1 - 2 - 3; 4 - 5 - 6; 7, 8]
 uint8_t SENDMSG;
 
 uint16_t FeatureCommunication::readADC(int _channel){ // 12 bit
