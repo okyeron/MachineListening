@@ -148,7 +148,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     
             // Set voltage to low if 10ms has passed
             if(features->getTimePassedSinceLastOnsetInMs() >= 10){
-                communicator->writeGPIO(12,0,0);
+                communicator->writeGPIO(16,0,0);
             }
             
             /*** Extract Spectral Features for the block ***/
@@ -157,18 +157,20 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
             // Get the onset
             onset = features->getOnset(onsetThreshold, interOnsetInterval);
             if(onset){
-                communicator->writeGPIO(12,1,0);
+                communicator->writeGPIO(16,1,0);
             }
             
             /***  Check which feature to output ***/
-            if(communicator->readDigital(25) == 0 && !updateFeature){
+            if(communicator->readDigital(24) == 0 && !updateFeature){
                 //printf("Updating activeFeature! \n");
                 activeFeature = (activeFeature+1) % NUM_FEATURES;
                 updateFeature = true;
+                communicator->writeGPIO(26,1,0); // Turn on Button LED
             }
             
-            if(communicator->readDigital(25) == 1 && updateFeature){
+            if(communicator->readDigital(24) == 1 && updateFeature){
                updateFeature = false;
+               communicator->writeGPIO(26,0,0); // Turn off Button LED
             }
             
             if(activeFeature == 0){
@@ -191,7 +193,7 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
                     synthesizer->setParam(CLfo::LfoParam_t::kLfoParamFrequency, centroid);
                     t_commTime = Clock::now();
                 
-                    communicator->writeGPIO(16, (int) roundf(communicator->scaleFrequency(centroid)), 1);
+                    communicator->writeGPIO(12, (int) roundf(communicator->scaleFrequency(centroid)), 1);
                 //}
                 
             } else if(activeFeature == 1){
@@ -226,8 +228,10 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         
         for( i=0; i<framesPerBuffer; i++ )
         {
-            *out++ = volume * *in++;     /* left  - clean */
-            *out++ = volume2 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
+//            *out++ = volume * *in++;     /* left  - clean */
+//            *out++ = volume2 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
+            *out++ = volume2 * synthesizer->getNext();     /* left - clean */ // add ++ to interleave for stereo
+            *out++ = volume * *in++;     /* right  - clean */ 
         }
     }
     return paContinue;

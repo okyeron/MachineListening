@@ -42,11 +42,11 @@ FeatureCommunication::FeatureCommunication(){
         wiringPiSPISetup(ADC_SPI_CHANNEL, ADC_SPI_SPEED);
         
         // GPIO Digital Output
-        pinMode(16, OUTPUT); //Spectral Feature output
-        softPwmCreate(16,0,256);
+        pinMode(12, OUTPUT); //Spectral Feature output
+        softPwmCreate(12,0,256);
         
-        pinMode(12, OUTPUT); //Onset Trigger output
-        //softPwmCreate(12,0,256);
+        pinMode(16, OUTPUT); //Onset Trigger output
+        //softPwmCreate(16,0,256);
     
         // Switches
         pinMode(23, INPUT); //Switch 1
