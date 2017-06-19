@@ -88,7 +88,8 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
     (void) timeInfo; /* Prevent unused variable warnings. */
     (void) statusFlags;
     (void) userData;
-    
+    float leftInput, rightInput;
+
     //Reduce volume
 //    SAMPLE* scaledIn = new SAMPLE[framesPerBuffer];
 //    for (int s = 0; s < framesPerBuffer; s++){
@@ -228,10 +229,10 @@ static int audioCallback( const void *inputBuffer, void *outputBuffer,
         
         for( i=0; i<framesPerBuffer; i++ )
         {
-//            *out++ = volume * *in++;     /* left  - clean */
-//            *out++ = volume2 * synthesizer->getNext();     /* right - clean */ // add ++ to interleave for stereo
-            *out++ = volume2 * synthesizer->getNext();     /* left - clean */ // add ++ to interleave for stereo
-            *out++ = volume * *in++;     /* right  - clean */ 
+           leftInput = *in++;      /* Get interleaved samples from input buffer */
+           rightInput = *in++;
+           *out++ = volume2 * synthesizer->getNext();          /* synth output */
+           *out++ = volume * 0.5f * (leftInput + rightInput);  /* mix */
         }
     }
     return paContinue;
@@ -277,8 +278,8 @@ int main(void)
     }
     
     //This may need to be stereo if testing on OSX
-    //inputParameters.channelCount = 1;       /* mono input */
-    //Terminal Tedium with wm8731 setting to Stereo
+    // inputParameters.channelCount = 1;       /* mono input */
+    // Terminal Tedium with wm8731 setting to Stereo
     inputParameters.channelCount = 2;       /* Stereo input */
     inputParameters.sampleFormat = PA_SAMPLE_TYPE;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
